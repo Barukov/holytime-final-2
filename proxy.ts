@@ -5,7 +5,9 @@ export function proxy(req: NextRequest) {
   const url = req.nextUrl;
 
   if (url.pathname === "/success" && url.searchParams.has("_ptxn")) {
-    return NextResponse.redirect(new URL("/success", req.url));
+    const checkoutUrl = new URL("/checkout", req.url);
+    checkoutUrl.searchParams.set("_ptxn", url.searchParams.get("_ptxn") || "");
+    return NextResponse.redirect(checkoutUrl);
   }
 
   return NextResponse.next();
