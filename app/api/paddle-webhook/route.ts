@@ -28,6 +28,21 @@ const PRODUCT_NAMES: Record<string, string> = {
   product255: "Master Resource Pack",
 };
 
+const ICONS = {
+  success: "\u{1F4B8}",
+  failed: "\u{26A0}\u{FE0F}",
+  website: "\u{1F310}",
+  email: "\u{1F464}",
+  product: "\u{1F4E6}",
+  amount: "\u{1F4B0}",
+  payment: "\u{1F4B3}",
+  country: "\u{1F30D}",
+  error: "\u{26A0}\u{FE0F}",
+  reason: "\u{1F4DD}",
+  id: "\u{1F9FE}",
+  date: "\u{1F552}",
+};
+
 const PAYMENT_ERROR_MESSAGES: Record<string, string> = {
   authentication_failed: "3DS authentication failed.",
   blocked_card: "Card is blocked, frozen, lost, damaged, or stolen.",
@@ -165,17 +180,17 @@ async function resolveCountry(data: any) {
 function buildPaymentMessage(title: string, details: Record<string, unknown>) {
   return `<b>${title}</b>
 
-🌐 <b>Website:</b> ${tg(details.website)}
+${ICONS.website} <b>Website:</b> ${tg(details.website)}
 
-👤 <b>Email:</b> ${tg(details.email)}
-📦 <b>Product:</b> ${tg(details.product)}
-💰 <b>Amount:</b> ${tg(details.amount)} ${tg(details.currency)}
-💳 <b>Payment:</b> ${tg(details.paymentMethod)}
-🌍 <b>Country:</b> ${tg(details.country)}
-${details.errorCode ? `⚠️ <b>Error:</b> ${tg(details.errorCode)}
-📝 <b>Reason:</b> ${tg(details.errorReason)}
-` : ""}🧾 <b>ID:</b> ${tg(details.transactionId)}
-🕒 <b>Date:</b> ${tg(details.date)}`;
+${ICONS.email} <b>Email:</b> ${tg(details.email)}
+${ICONS.product} <b>Product:</b> ${tg(details.product)}
+${ICONS.amount} <b>Amount:</b> ${tg(details.amount)} ${tg(details.currency)}
+${ICONS.payment} <b>Payment:</b> ${tg(details.paymentMethod)}
+${ICONS.country} <b>Country:</b> ${tg(details.country)}
+${details.errorCode ? `${ICONS.error} <b>Error:</b> ${tg(details.errorCode)}
+${ICONS.reason} <b>Reason:</b> ${tg(details.errorReason)}
+` : ""}${ICONS.id} <b>ID:</b> ${tg(details.transactionId)}
+${ICONS.date} <b>Date:</b> ${tg(details.date)}`;
 }
 
 export async function POST(req: Request) {
@@ -246,7 +261,7 @@ export async function POST(req: Request) {
 
     if (eventType === "transaction.payment_failed") {
       await sendDesk1TelegramMessage(
-        buildPaymentMessage("PADDLE PAYMENT FAILED", {
+        buildPaymentMessage(`${ICONS.failed} PADDLE PAYMENT FAILED`, {
           ...details,
           errorCode: failureReason.code,
           errorReason: failureReason.message,
@@ -261,7 +276,7 @@ export async function POST(req: Request) {
     }
 
     await sendDesk1TelegramMessage(
-      buildPaymentMessage("PADDLE PAYMENT SUCCESSFUL", details)
+      buildPaymentMessage(`${ICONS.success} PADDLE PAYMENT SUCCESSFUL`, details)
     );
 
     const downloadLink = PRODUCT_LINKS[productId];
