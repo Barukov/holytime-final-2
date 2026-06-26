@@ -2,7 +2,14 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const TIME_ZONE = "Europe/Kyiv";
+const DESK1_CHAT_ID = process.env.TELEGRAM_DESK1_CHAT_ID || "-1003983054033";
+const DESK2_CHAT_ID = "-1003808961913";
 const SUCCESS_STATUSES = new Set(["completed", "billed", "paid"]);
+
+type StatsAccount = {
+  apiKey: string;
+  title: string;
+};
 
 function tg(value: unknown) {
   return String(value ?? "")
@@ -10,6 +17,26 @@ function tg(value: unknown) {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+}
+
+function getAccountForChat(chatId: unknown): StatsAccount | null {
+  const id = String(chatId || "");
+
+  if (id === DESK1_CHAT_ID) {
+    return {
+      apiKey: process.env.PADDLE_API_KEY || "",
+      title: "Holytime Auction",
+    };
+  }
+
+  if (id === DESK2_CHAT_ID) {
+    return {
+      apiKey: process.env.PADDLE_DESK2_API_KEY || "",
+      title: "Holytime Final",
+    };
+  }
+
+  return null;
 }
 
 function kyivDateKey(value: string | null | undefined) {
@@ -41,8 +68,7 @@ function transactionProduct(transaction: any) {
   );
 }
 
-async function fetchAddress(transaction: any) {
-  const apiKey = process.env.PADDLE_API_KEY;
+async function fetchAddress(transaction: any, apiKey: string) {
   const customerId = transaction.customer_id;
   const addressId = transaction.address_id;
 
@@ -71,9 +97,7 @@ async function fetchAddress(transaction: any) {
   }
 }
 
-async function fetchTodayTransactions() {
-  const apiKey = process.env.PADDLE_API_KEY;
-
+async function fetchTodayTransactions(apiKey: string) {
   if (!apiKey) return [];
 
   const today = kyivDateKey(new Date().toISOString());
@@ -109,8 +133,8 @@ async function fetchTodayTransactions() {
   return transactions;
 }
 
-async function buildTodayReport() {
-  const transactions = await fetchTodayTransactions();
+async function buildTodayReport(account: StatsAccount) {
+  const transactions = await fetchTodayTransactions(account.apiKey);
   const totals = new Map<string, number>();
   const lines: string[] = [];
 
@@ -119,7 +143,7 @@ async function buildTodayReport() {
     const currency = transaction.currency_code || transaction.details?.totals?.currency_code || "EUR";
     totals.set(currency, (totals.get(currency) || 0) + amount);
 
-    const address = await fetchAddress(transaction);
+    const address = await fetchAddress(transaction, account.apiKey);
     const country = address.postalCode ? `${address.country} ZIP: ${address.postalCode}` : address.country;
     const email = transaction.customer?.email || transaction.customer_email || transaction.custom_data?.email || "unknown";
 
@@ -139,7 +163,7 @@ async function buildTodayReport() {
   }).format(new Date());
 
   const body = lines.length ? lines.join("\n") : "No successful payments today.";
-  const report = `<b>Holytime Auction - Today (${tg(date)})</b>
+  const report = `<b>${tg(account.title)} - Today (${tg(date)})</b>
 
 Payments: <b>${transactions.length}</b>
 Total: <b>${tg(totalText)}</b>
@@ -170,15 +194,21 @@ export async function POST(req: Request) {
   const update = await req.json().catch(() => null);
   const message = update?.message || update?.edited_message;
   const chatId = message?.chat?.id;
-  const allowedChatId = process.env.TELEGRAM_DESK1_CHAT_ID;
   const text = String(message?.text || "").trim().split(/\s+/)[0].split("@")[0].toLowerCase();
 
-  if (!chatId || !allowedChatId || String(chatId) !== allowedChatId) {
+  if (!chatId) {
     return new Response("OK", { status: 200 });
   }
 
+  const account = getAccountForChat(chatId);
+
   if (["/today", "/stats", "/sales"].includes(text)) {
-    await sendTelegram(chatId, await buildTodayReport());
+    if (!account) {
+      await sendTelegram(chatId, `This chat is not linked. Chat ID: <code>${tg(chatId)}</code>`);
+      return new Response("OK", { status: 200 });
+    }
+
+    await sendTelegram(chatId, await buildTodayReport(account));
     return new Response("OK", { status: 200 });
   }
 
