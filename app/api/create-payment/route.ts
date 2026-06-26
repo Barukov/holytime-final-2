@@ -4,14 +4,14 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const PADDLE_PRICE_IDS: Record<string, string> = {
-  starter: "pri_01kqstdk4f4h6xm4nf0eqjqhms",
-  advanced: "pri_01kqstetc9k2t3jnpm7py0r4pt",
-  premium: "pri_01ktrx34ezebz7kw9jgdgqyz9w",
+  starter: "pri_01kw2z9fx18tjm4r24zmksycpd",
+  advanced: "pri_01kw2ze9bbv34dt58bzdye7nrq",
+  premium: "pri_01kw2zfkhr3hyr83f2r7fqyn5b",
 
-  product159: "pri_01ksg242d7grz69xsaf7999hd5",
-  product161: "pri_01ksg1ychgaeytf7yfftmrs99r",
-  product199: "pri_01ksg1v9wq5gv0fkekpnk1r3sy",
-  product245: "pri_01ksg4aqbr9743eq2ez4fday8g",
+  product159: "pri_01kw2z5j90bmmk73ty98ak4pcy",
+  product161: "pri_01kw2z6w4wampqn03515w2acqn",
+  product199: "pri_01kw2z8dney4mcq6ha8vn6d9cb",
+  product245: "pri_01kw2zckxm0k3vqvzmp8yx143x",
   product255: "pri_01ksg4fk56b63x123tnqegtr9q",
 };
 
