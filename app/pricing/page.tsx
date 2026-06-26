@@ -1,11 +1,11 @@
 import Link from "next/link";
 
 const products = [
-  ["product159", "Essential Digital Pack", "€249", "Core guides, templates and study resources."],
   ["product161", "Professional Digital Pack", "€161", "Advanced worksheets, trackers and premium materials."],
   ["product199", "Elite Trading Pack", "€199", "Educational materials, structured learning resources and technical study guides."],
   ["starter", "Starter Digital Pack", "€219", "PDF guides, checklists, note templates and study planners."],
   ["product245", "Ultimate Learning Pack", "€245", "Advanced guides, templates, worksheets and structured learning resources."],
+  ["product159", "Essential Digital Pack", "€249", "Core guides, templates and study resources."],
   ["advanced", "Advanced Digital Pack", "€250", "Worksheets, examples, progress trackers and structured resources."],
   ["product255", "Master Resource Pack", "€255", "Premium materials, advanced resources, templates and study systems."],
   ["premium", "Premium Digital Bundle", "€500", "Full digital resource library with guides, templates, worksheets and bonuses."],
