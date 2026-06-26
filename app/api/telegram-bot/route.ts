@@ -3,7 +3,6 @@ export const dynamic = "force-dynamic";
 
 const TIME_ZONE = "Europe/Kyiv";
 const DESK1_CHAT_ID = process.env.TELEGRAM_DESK1_CHAT_ID || "-1003983054033";
-const DESK2_CHAT_ID = "-1003808961913";
 const SUCCESS_STATUSES = new Set(["completed", "billed", "paid"]);
 
 type StatsAccount = {
@@ -29,14 +28,10 @@ function getAccountForChat(chatId: unknown): StatsAccount | null {
     };
   }
 
-  if (id === DESK2_CHAT_ID) {
-    return {
-      apiKey: process.env.PADDLE_DESK2_API_KEY || "",
-      title: "Holytime Final",
-    };
-  }
-
-  return null;
+  return {
+    apiKey: process.env.PADDLE_DESK2_API_KEY || "",
+    title: "Holytime Final",
+  };
 }
 
 function kyivDateKey(value: string | null | undefined) {
@@ -207,11 +202,6 @@ export async function POST(req: Request) {
   const account = getAccountForChat(chatId);
 
   if (text === "/today") {
-    if (!account) {
-      await sendTelegram(chatId, `This chat is not linked. Chat ID: <code>${tg(chatId)}</code>`);
-      return new Response("OK", { status: 200 });
-    }
-
     await sendTelegram(chatId, await buildTodayReport(account));
     return new Response("OK", { status: 200 });
   }
