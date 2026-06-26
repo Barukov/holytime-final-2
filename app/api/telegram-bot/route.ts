@@ -55,17 +55,28 @@ function formatMoney(amount: unknown, currency: unknown) {
   return `${value.toFixed(2)} ${String(currency || "EUR")}`;
 }
 
-function transactionAmount(transaction: any) {
-  return transaction.details?.totals?.grand_total || transaction.details?.totals?.total || "0";
-}
+function transactionNetAmount(transaction: any) {
+  const payoutTotals = transaction.details?.payout_totals || transaction.details?.adjusted_payout_totals;
+  const totals = transaction.details?.totals;
 
-function transactionProduct(transaction: any) {
-  return (
-    transaction.details?.line_items?.[0]?.product?.name ||
-    transaction.items?.[0]?.price?.name ||
-    transaction.custom_data?.productId ||
-    "unknown product"
-  );
+  if (payoutTotals?.earnings !== undefined && payoutTotals?.earnings !== null) {
+    return {
+      amount: Number(payoutTotals.earnings),
+      currency: payoutTotals.currency_code || transaction.currency_code || totals?.currency_code || "EUR",
+    };
+  }
+
+  if (totals?.fee !== undefined && totals?.fee !== null) {
+    return {
+      amount: Number(totals.grand_total || totals.total || 0) - Number(totals.fee || 0),
+      currency: totals.currency_code || transaction.currency_code || "EUR",
+    };
+  }
+
+  return {
+    amount: Number(totals?.grand_total || totals?.total || 0),
+    currency: totals?.currency_code || transaction.currency_code || "EUR",
+  };
 }
 
 async function fetchAddress(transaction: any, apiKey: string) {
@@ -139,17 +150,11 @@ async function buildTodayReport(account: StatsAccount) {
   const lines: string[] = [];
 
   for (const transaction of transactions) {
-    const amount = Number(transactionAmount(transaction));
-    const currency = transaction.currency_code || transaction.details?.totals?.currency_code || "EUR";
+    const { amount, currency } = transactionNetAmount(transaction);
     totals.set(currency, (totals.get(currency) || 0) + amount);
-
-    const address = await fetchAddress(transaction, account.apiKey);
-    const country = address.postalCode ? `${address.country} ZIP: ${address.postalCode}` : address.country;
     const email = transaction.customer?.email || transaction.customer_email || transaction.custom_data?.email || "unknown";
 
-    lines.push(
-      `• ${tg(email)} | ${tg(transactionProduct(transaction))} | ${tg(formatMoney(amount, currency))} | ${tg(country)} | <code>${tg(transaction.id)}</code>`
-    );
+    lines.push(`• ${tg(email)}`);
   }
 
   const totalText =
@@ -165,8 +170,7 @@ async function buildTodayReport(account: StatsAccount) {
   const body = lines.length ? lines.join("\n") : "No successful payments today.";
   const report = `<b>${tg(account.title)} - Today (${tg(date)})</b>
 
-Payments: <b>${transactions.length}</b>
-Total: <b>${tg(totalText)}</b>
+Total after Paddle fee: <b>${tg(totalText)}</b>
 
 ${body}`;
 
@@ -202,7 +206,7 @@ export async function POST(req: Request) {
 
   const account = getAccountForChat(chatId);
 
-  if (["/today", "/stats", "/sales"].includes(text)) {
+  if (text === "/today") {
     if (!account) {
       await sendTelegram(chatId, `This chat is not linked. Chat ID: <code>${tg(chatId)}</code>`);
       return new Response("OK", { status: 200 });
@@ -213,7 +217,7 @@ export async function POST(req: Request) {
   }
 
   if (text === "/help" || text === "/start") {
-    await sendTelegram(chatId, "Commands: /today, /stats, /sales");
+    await sendTelegram(chatId, "Command: /today");
   }
 
   return new Response("OK", { status: 200 });
