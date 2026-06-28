@@ -18,7 +18,7 @@ function tg(value: unknown) {
     .replace(/"/g, "&quot;");
 }
 
-function getAccountForChat(chatId: unknown): StatsAccount | null {
+function getAccountForChat(chatId: unknown): StatsAccount {
   const id = String(chatId || "");
 
   if (id === DESK1_CHAT_ID) {
@@ -42,6 +42,16 @@ function kyivDateKey(value: string | null | undefined) {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
+  }).format(new Date(value));
+}
+
+function kyivMonthKey(value: string | null | undefined) {
+  if (!value) return "";
+
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
   }).format(new Date(value));
 }
 
@@ -139,6 +149,42 @@ async function fetchTodayTransactions(apiKey: string) {
   return transactions;
 }
 
+async function fetchCurrentMonthTransactions(apiKey: string) {
+  if (!apiKey) return [];
+
+  const month = kyivMonthKey(new Date().toISOString());
+  let url = "https://api.paddle.com/transactions?per_page=100&order_by=created_at[DESC]";
+  const transactions: any[] = [];
+
+  for (let page = 0; page < 10 && url; page += 1) {
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${apiKey}` },
+      cache: "no-store",
+    });
+
+    if (!res.ok) break;
+
+    const json = await res.json();
+    const pageTransactions = Array.isArray(json.data) ? json.data : [];
+
+    for (const transaction of pageTransactions) {
+      const dateForReport = transaction.billed_at || transaction.created_at;
+      const status = String(transaction.status || "").toLowerCase();
+
+      if (kyivMonthKey(dateForReport) === month && SUCCESS_STATUSES.has(status)) {
+        transactions.push(transaction);
+      }
+    }
+
+    const oldest = pageTransactions[pageTransactions.length - 1];
+    if (oldest && kyivMonthKey(oldest.created_at) !== month) break;
+
+    url = json.meta?.pagination?.has_more ? json.meta.pagination.next : "";
+  }
+
+  return transactions;
+}
+
 async function buildTodayReport(account: StatsAccount) {
   const transactions = await fetchTodayTransactions(account.apiKey);
   const totals = new Map<string, number>();
@@ -149,7 +195,7 @@ async function buildTodayReport(account: StatsAccount) {
     totals.set(currency, (totals.get(currency) || 0) + amount);
     const email = transaction.customer?.email || transaction.customer_email || transaction.custom_data?.email || "unknown";
 
-    lines.push(`• ${tg(email)}`);
+    lines.push(`- ${tg(email)}`);
   }
 
   const totalText =
@@ -170,6 +216,32 @@ Total after Paddle fee: <b>${tg(totalText)}</b>
 ${body}`;
 
   return report.length > 3900 ? `${report.slice(0, 3800)}\n\n...truncated` : report;
+}
+
+async function buildBalanceReport(account: StatsAccount) {
+  const transactions = await fetchCurrentMonthTransactions(account.apiKey);
+  const totals = new Map<string, number>();
+
+  for (const transaction of transactions) {
+    const { amount, currency } = transactionNetAmount(transaction);
+    totals.set(currency, (totals.get(currency) || 0) + amount);
+  }
+
+  const totalText =
+    [...totals.entries()]
+      .map(([currency, amount]) => formatMoney(amount, currency))
+      .join(", ") || "0.00 EUR";
+
+  const month = new Intl.DateTimeFormat("en-GB", {
+    timeZone: TIME_ZONE,
+    month: "long",
+    year: "numeric",
+  }).format(new Date());
+
+  return `<b>${tg(account.title)} - Balance</b>
+
+Full balance for ${tg(month)} after Paddle fee: <b>${tg(totalText)}</b>
+Successful payments: <b>${tg(transactions.length)}</b>`;
 }
 
 async function sendTelegram(chatId: string | number, text: string) {
@@ -206,8 +278,13 @@ export async function POST(req: Request) {
     return new Response("OK", { status: 200 });
   }
 
+  if (text === "/balance") {
+    await sendTelegram(chatId, await buildBalanceReport(account));
+    return new Response("OK", { status: 200 });
+  }
+
   if (text === "/help" || text === "/start") {
-    await sendTelegram(chatId, "Command: /today");
+    await sendTelegram(chatId, "Commands: /today, /balance");
   }
 
   return new Response("OK", { status: 200 });

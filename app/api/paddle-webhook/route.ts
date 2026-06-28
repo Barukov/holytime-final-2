@@ -44,7 +44,7 @@ const ICONS = {
 };
 
 const PAYMENT_ERROR_MESSAGES: Record<string, string> = {
-  authentication_failed: "3DS/bank verification failed. The customer opened the bank confirmation challenge, but the bank did not approve it.",
+  authentication_failed: "3DS authentication failed. Customer completed the bank verification challenge, but it was not successful.",
   blocked_card: "The card is blocked, frozen, lost, damaged, or stolen. Customer should try another card.",
   canceled: "Payment was canceled by the customer, bank, or payment provider.",
   declined: "Payment was declined by the bank or payment provider. Customer should try another card.",
