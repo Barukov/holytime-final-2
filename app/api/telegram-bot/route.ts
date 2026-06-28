@@ -6,10 +6,14 @@ const DESK1_CHAT_ID = process.env.TELEGRAM_DESK1_CHAT_ID || "-1003983054033";
 const SUCCESS_STATUSES = new Set(["completed", "billed", "paid"]);
 const BALANCE_REPORT_START = "2020-01-01";
 const FRESH_REPORT_MAX_AGE_MS = 2 * 60 * 1000;
+const DEFAULT_BALANCE_BASE_CUTOFF_ISO = "2026-06-28T16:44:06Z";
 
 type StatsAccount = {
   apiKey: string;
   title: string;
+  balanceBaseAmount: number;
+  balanceBaseCurrency: string;
+  balanceBaseCutoffIso: string;
 };
 
 function tg(value: unknown) {
@@ -27,12 +31,18 @@ function getAccountForChat(chatId: unknown): StatsAccount {
     return {
       apiKey: process.env.PADDLE_API_KEY || "",
       title: "Holytime Auction",
+      balanceBaseAmount: Number(process.env.PADDLE_DESK1_BALANCE_BASE_AMOUNT || 4568.82),
+      balanceBaseCurrency: process.env.PADDLE_DESK1_BALANCE_BASE_CURRENCY || "USD",
+      balanceBaseCutoffIso: process.env.PADDLE_DESK1_BALANCE_BASE_CUTOFF_ISO || DEFAULT_BALANCE_BASE_CUTOFF_ISO,
     };
   }
 
   return {
     apiKey: process.env.PADDLE_DESK2_API_KEY || "",
     title: "Holytime Final",
+    balanceBaseAmount: Number(process.env.PADDLE_DESK2_BALANCE_BASE_AMOUNT || 60845.43),
+    balanceBaseCurrency: process.env.PADDLE_DESK2_BALANCE_BASE_CURRENCY || "USD",
+    balanceBaseCutoffIso: process.env.PADDLE_DESK2_BALANCE_BASE_CUTOFF_ISO || DEFAULT_BALANCE_BASE_CUTOFF_ISO,
   };
 }
 
@@ -58,6 +68,14 @@ function formatDecimalMoney(amount: unknown, currency: unknown) {
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function parsePaddleDate(value: unknown) {
+  const normalized = String(value || "")
+    .replace(" ", "T")
+    .replace(" Z", "Z");
+
+  return new Date(normalized);
 }
 
 function transactionNetAmount(transaction: any) {
@@ -329,17 +347,21 @@ Repeat /balance in about 1 minute.`;
 
     const rows = parseCsv(await downloadReportCsv(account.apiKey, report.id));
     const totals = new Map<string, number>();
-    let openRows = 0;
+    const cutoff = new Date(account.balanceBaseCutoffIso);
+    let newRows = 0;
+
+    totals.set(account.balanceBaseCurrency, account.balanceBaseAmount);
 
     for (const row of rows) {
       if (row.payout_id) continue;
+      if (parsePaddleDate(row.updated_at) <= cutoff) continue;
 
       const currency = row.balance_currency_code || "USD";
       const amount = Number(row.balance_amount || 0);
       const direction = String(row.direction || "").toLowerCase();
       const signedAmount = direction === "out" ? -amount : amount;
 
-      openRows += 1;
+      newRows += 1;
       totals.set(currency, (totals.get(currency) || 0) + signedAmount);
     }
 
@@ -351,7 +373,7 @@ Repeat /balance in about 1 minute.`;
     return `<b>${tg(account.title)} - Balance</b>
 
 Currently in Paddle balance: <b>${tg(totalText)}</b>
-Open balance movements: <b>${tg(openRows)}</b>`;
+New balance movements: <b>${tg(newRows)}</b>`;
   } catch (error) {
     return `<b>${tg(account.title)} - Balance</b>
 
