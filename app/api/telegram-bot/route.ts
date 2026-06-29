@@ -364,6 +364,41 @@ async function sendTelegram(chatId: string | number, text: string) {
   });
 }
 
+function buildJolliesTestMessages() {
+  const date = new Intl.DateTimeFormat("en-GB", {
+    timeZone: TIME_ZONE,
+    dateStyle: "short",
+    timeStyle: "medium",
+  }).format(new Date());
+
+  return [
+    `<b>TEST / EXAMPLE - PADDLE PAYMENT SUCCESSFUL</b>
+
+🌐 <b>Website:</b> jolliestime.space
+
+👤 <b>Email:</b> customer@example.com
+📦 <b>Product:</b> Advanced Practice Vault
+💰 <b>Amount:</b> 250.00 EUR
+💳 <b>Payment:</b> card
+🌍 <b>Country:</b> DE ZIP: 54292
+🧾 <b>ID:</b> txn_test_jollies_success
+🕒 <b>Date:</b> ${tg(date)}`,
+    `<b>TEST / EXAMPLE - PADDLE PAYMENT FAILED</b>
+
+🌐 <b>Website:</b> jolliestime.space
+
+👤 <b>Email:</b> customer@example.com
+📦 <b>Product:</b> Advanced Practice Vault
+💰 <b>Amount:</b> 250.00 EUR
+💳 <b>Payment:</b> card
+🌍 <b>Country:</b> DE ZIP: 54292
+⚠️ <b>Error:</b> authentication_failed
+📝 <b>Reason:</b> 3DS authentication failed. Customer completed the bank verification challenge, but it was not successful.
+🧾 <b>ID:</b> txn_test_jollies_failed
+🕒 <b>Date:</b> ${tg(date)}`,
+  ];
+}
+
 export async function POST(req: Request) {
   const update = await req.json().catch(() => null);
   const message = update?.message || update?.edited_message;
@@ -387,6 +422,13 @@ ${message?.chat?.title ? `\n${tg(message.chat.title)}` : ""}`
     return new Response("OK", { status: 200 });
   }
 
+  if (text === "/testjollies") {
+    for (const testMessage of buildJolliesTestMessages()) {
+      await sendTelegram(chatId, testMessage);
+    }
+    return new Response("OK", { status: 200 });
+  }
+
   if (text === "/today") {
     await sendTelegram(chatId, await buildTodayReport(account));
     return new Response("OK", { status: 200 });
@@ -398,7 +440,7 @@ ${message?.chat?.title ? `\n${tg(message.chat.title)}` : ""}`
   }
 
   if (text === "/help" || text === "/start") {
-    await sendTelegram(chatId, "Commands: /today, /balance, /id");
+    await sendTelegram(chatId, "Commands: /today, /balance, /id, /testjollies");
   }
 
   return new Response("OK", { status: 200 });
