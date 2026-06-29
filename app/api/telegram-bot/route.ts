@@ -370,32 +370,44 @@ function buildJolliesTestMessages() {
     dateStyle: "short",
     timeStyle: "medium",
   }).format(new Date());
+  const icon = {
+    website: "\u{1F310}",
+    email: "\u{1F464}",
+    product: "\u{1F4E6}",
+    amount: "\u{1F4B0}",
+    payment: "\u{1F4B3}",
+    country: "\u{1F30D}",
+    error: "\u{26A0}\u{FE0F}",
+    reason: "\u{1F4DD}",
+    id: "\u{1F9FE}",
+    date: "\u{1F552}",
+  };
 
   return [
     `<b>TEST / EXAMPLE - PADDLE PAYMENT SUCCESSFUL</b>
 
-🌐 <b>Website:</b> jolliestime.space
+${icon.website} <b>Website:</b> jolliestime.space
 
-👤 <b>Email:</b> customer@example.com
-📦 <b>Product:</b> Advanced Practice Vault
-💰 <b>Amount:</b> 250.00 EUR
-💳 <b>Payment:</b> card
-🌍 <b>Country:</b> DE ZIP: 54292
-🧾 <b>ID:</b> txn_test_jollies_success
-🕒 <b>Date:</b> ${tg(date)}`,
+${icon.email} <b>Email:</b> customer@example.com
+${icon.product} <b>Product:</b> Advanced Practice Vault
+${icon.amount} <b>Amount:</b> 250.00 EUR
+${icon.payment} <b>Payment:</b> card
+${icon.country} <b>Country:</b> DE ZIP: 54292
+${icon.id} <b>ID:</b> txn_test_jollies_success
+${icon.date} <b>Date:</b> ${tg(date)}`,
     `<b>TEST / EXAMPLE - PADDLE PAYMENT FAILED</b>
 
-🌐 <b>Website:</b> jolliestime.space
+${icon.website} <b>Website:</b> jolliestime.space
 
-👤 <b>Email:</b> customer@example.com
-📦 <b>Product:</b> Advanced Practice Vault
-💰 <b>Amount:</b> 250.00 EUR
-💳 <b>Payment:</b> card
-🌍 <b>Country:</b> DE ZIP: 54292
-⚠️ <b>Error:</b> authentication_failed
-📝 <b>Reason:</b> 3DS authentication failed. Customer completed the bank verification challenge, but it was not successful.
-🧾 <b>ID:</b> txn_test_jollies_failed
-🕒 <b>Date:</b> ${tg(date)}`,
+${icon.email} <b>Email:</b> customer@example.com
+${icon.product} <b>Product:</b> Advanced Practice Vault
+${icon.amount} <b>Amount:</b> 250.00 EUR
+${icon.payment} <b>Payment:</b> card
+${icon.country} <b>Country:</b> DE ZIP: 54292
+${icon.error} <b>Error:</b> authentication_failed
+${icon.reason} <b>Reason:</b> 3DS authentication failed. Customer completed the bank verification challenge, but it was not successful.
+${icon.id} <b>ID:</b> txn_test_jollies_failed
+${icon.date} <b>Date:</b> ${tg(date)}`,
   ];
 }
 
