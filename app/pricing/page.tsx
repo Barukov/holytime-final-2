@@ -1,43 +1,64 @@
 import Link from "next/link";
 import { products } from "../lib/products";
 
-const deliverables = [
-  "PDF course files",
-  "Programming notes",
-  "C# and .NET resources",
-  "Practice exercises",
-  "Study checklists",
-  "Download link by email",
-];
+const columns = ["Pack", "Best for", "Includes", "Price", "Action"];
 
 export default function PricingPage() {
   return (
-    <main className="min-h-screen bg-[#f6f4ec] text-[#16130f]">
-      <header className="bg-[#11100d] px-6 py-7 text-white md:px-8">
+    <main className="min-h-screen bg-[#f7f2e8] text-[#14100a]">
+      <header className="border-b border-black/10 bg-[#0d1117] px-5 py-6 text-white md:px-8">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
-          <Link href="/" className="text-2xl font-black md:text-3xl">DevShelf Academy</Link>
-          <Link href="/" className="rounded-full bg-[#d6ff5f] px-6 py-3 font-black text-black">Back home</Link>
+          <Link href="/" className="text-xl font-black md:text-2xl">DevShelf Academy</Link>
+          <Link href="/" className="rounded-full bg-[#f5c84b] px-5 py-3 text-sm font-black text-[#14100a]">Back home</Link>
         </div>
       </header>
-      <section className="mx-auto max-w-7xl px-6 py-20 md:px-8">
-        <p className="font-black uppercase tracking-[0.28em] text-[#607000]">Pricing</p>
-        <h1 className="mt-4 max-w-4xl text-6xl font-black leading-tight">Digital programming packs</h1>
-        <p className="mt-6 max-w-3xl text-lg leading-8 text-black/60">DevShelf Academy sells downloadable PDF books, course files and programming resources through https://devshelf.company/. All products are digital and delivered by email after successful payment confirmation.</p>
-        <div className="mt-14 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {products.map((product) => (
-            <Link key={product.slug} href={"/product/" + product.slug} className="flex min-h-[370px] flex-col rounded-[1.5rem] bg-white p-7 shadow-[0_18px_55px_rgba(22,19,15,.08)] transition hover:-translate-y-2">
-              <p className="text-xs font-black uppercase tracking-[0.25em] text-[#607000]">{product.tag}</p>
-              <h2 className="mt-5 text-3xl font-black leading-tight">{product.name}</h2>
-              <p className="mt-5 leading-7 text-black/60">{product.shortDescription}</p>
-              <p className="mt-auto text-5xl font-black">{product.price.replace("?", "")} EUR</p>
-              <div className="mt-7 rounded-full bg-[#11100d] px-6 py-4 text-center font-black text-white">View product</div>
-            </Link>
-          ))}
+
+      <section className="mx-auto max-w-7xl px-5 py-16 md:px-8 md:py-20">
+        <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-[#087f72]">Pricing board</p>
+            <h1 className="mt-3 text-5xl font-black leading-tight md:text-7xl">Compare the digital packs.</h1>
+          </div>
+          <p className="max-w-2xl text-lg leading-8 text-black/60">All items are downloadable digital products sold through devshelf.company. Choose a focused pack or open the complete library if you want every included resource.</p>
         </div>
-        <div className="mt-16 rounded-[2rem] bg-[#11100d] p-8 text-white">
-          <h2 className="text-4xl font-black">Included across the catalog</h2>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {deliverables.map((item) => <div key={item} className="rounded-2xl bg-white/8 p-5 font-bold text-white/80">{item}</div>)}
+
+        <div className="mt-12 overflow-hidden border border-black/10 bg-white shadow-[0_20px_70px_rgba(20,16,10,.08)]">
+          <div className="hidden grid-cols-[1.2fr_1.1fr_1.4fr_.55fr_.75fr] bg-[#0d1117] text-sm font-black uppercase tracking-[0.16em] text-white/66 lg:grid">
+            {columns.map((column) => <div key={column} className="px-5 py-4">{column}</div>)}
+          </div>
+
+          <div className="divide-y divide-black/10">
+            {products.map((product) => (
+              <div key={product.slug} className="grid gap-4 px-5 py-6 transition hover:bg-[#fff9e8] lg:grid-cols-[1.2fr_1.1fr_1.4fr_.55fr_.75fr] lg:items-center">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.2em] text-[#087f72]">{product.tag}</p>
+                  <h2 className="mt-2 text-2xl font-black">{product.name}</h2>
+                </div>
+                <p className="leading-7 text-black/62">{product.shortDescription}</p>
+                <div className="flex flex-wrap gap-2">
+                  {product.includes.slice(0, 3).map((item) => (
+                    <span key={item} className="border border-black/10 bg-[#f7f2e8] px-3 py-2 text-xs font-bold">{item}</span>
+                  ))}
+                </div>
+                <p className="text-2xl font-black">{product.price}</p>
+                <Link href={"/product/" + product.slug} className="inline-flex justify-center rounded-full bg-[#14100a] px-5 py-3 text-sm font-black text-white transition hover:-translate-y-0.5">Open</Link>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-10 grid gap-4 md:grid-cols-3">
+          <div className="border border-black/10 bg-white p-6">
+            <p className="text-3xl font-black">Digital only</p>
+            <p className="mt-3 leading-7 text-black/58">No postal shipping. Delivery is handled by email after payment confirmation.</p>
+          </div>
+          <div className="border border-black/10 bg-white p-6">
+            <p className="text-3xl font-black">Secure checkout</p>
+            <p className="mt-3 leading-7 text-black/58">Payments are processed by Paddle using supported payment methods.</p>
+          </div>
+          <div className="border border-black/10 bg-white p-6">
+            <p className="text-3xl font-black">Support ready</p>
+            <p className="mt-3 leading-7 text-black/58">Use the contact page with your checkout email if delivery help is needed.</p>
           </div>
         </div>
       </section>

@@ -7,7 +7,7 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 
 export const metadata: Metadata = {
   title: "DevShelf Academy",
-  description: "Digital programming PDF books, course files and learning resources sold through https://devshelf.company/.",
+  description: "Digital study packs, PDF files, templates and learning resources sold through https://devshelf.company/.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

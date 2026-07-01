@@ -1,31 +1,44 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { products } from "./lib/products";
 
+const filters = ["All", "Starter", "Popular", "Practice", "Complete"];
+
+const deliverySteps = [
+  ["Select", "Open a pack and review what is included."],
+  ["Checkout", "Pay securely through Paddle with the email that should receive the files."],
+  ["Access", "The digital download is sent after payment confirmation."],
+];
+
 const faqs = [
-  ["What is DevShelf Academy?", "A digital library for programming study files, PDF course packs, C# resources, .NET notes and practical learning materials."],
+  ["What is DevShelf Academy?", "A digital library for downloadable study packs, PDF files, notes, templates and learning resources."],
   ["How do I receive files?", "After successful Paddle payment, the download link is sent to the email used during checkout."],
-  ["Are products physical?", "No. All products are digital PDF/course resources. Nothing is shipped by post."],
+  ["Are products physical?", "No. All products are digital files. Nothing is shipped by post."],
   ["Can I request support?", "Yes. Use the contact page and include the email used at checkout so we can find your order."],
 ];
 
 export default function Page() {
-  const [open, setOpen] = useState<number | null>(0);
-  const featured = products.find((product) => product.slug === "complete-devshelf-library") || products[0];
+  const [activeFilter, setActiveFilter] = useState("All");
+  const [activeSlug, setActiveSlug] = useState(products[1].slug);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  const visibleProducts = useMemo(() => {
+    if (activeFilter === "All") return products;
+    return products.filter((product) => product.tag === activeFilter);
+  }, [activeFilter]);
+
+  const activeProduct = products.find((product) => product.slug === activeSlug) || products[0];
+  const totalValue = products.reduce((sum, product) => sum + product.amount, 0);
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[#f6f4ec] text-[#16130f]">
-      <section className="relative bg-[#11100d] text-white">
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#d6ff5f] to-transparent" />
-        <div className="absolute left-[8%] top-24 h-72 w-72 rounded-full bg-[#d6ff5f]/15 blur-[100px]" />
-        <div className="absolute bottom-0 right-[6%] h-80 w-80 rounded-full bg-[#58c7ff]/15 blur-[110px]" />
-
-        <header className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-7 md:px-8">
-          <Link href="/" className="text-2xl font-black tracking-tight md:text-3xl">DevShelf Academy</Link>
-          <nav className="hidden items-center gap-7 text-sm font-bold text-white/75 md:flex">
-            <a href="#catalog">Catalog</a>
+    <main className="min-h-screen bg-[#0d1117] text-[#f7f2e8]">
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0d1117]/92 backdrop-blur">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5 md:px-8">
+          <Link href="/" className="text-xl font-black tracking-tight md:text-2xl">DevShelf Academy</Link>
+          <nav className="hidden items-center gap-6 text-sm font-bold text-white/62 md:flex">
+            <a href="#library">Library</a>
             <Link href="/pricing">Pricing</Link>
             <Link href="/delivery">Delivery</Link>
             <Link href="/terms">Terms</Link>
@@ -33,111 +46,143 @@ export default function Page() {
             <Link href="/refund-policy">Refunds</Link>
             <Link href="/contact">Contact</Link>
           </nav>
-          <a href="#catalog" className="rounded-full bg-[#d6ff5f] px-6 py-3 font-black text-black transition hover:-translate-y-0.5">Browse files</a>
-        </header>
+          <a href="#library" className="rounded-full bg-[#f5c84b] px-5 py-3 text-sm font-black text-[#14100a] transition hover:-translate-y-0.5">Open library</a>
+        </div>
+      </header>
 
-        <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-6 pb-24 pt-16 md:px-8 lg:grid-cols-[1.05fr_.95fr]">
-          <div className="animate-rise">
-            <p className="mb-5 inline-flex rounded-full border border-white/15 px-4 py-2 text-sm font-bold text-[#d6ff5f]">PDF books, course files and programming resources</p>
-            <h1 className="max-w-4xl text-6xl font-black leading-[0.92] md:text-8xl">Build your programming shelf.</h1>
-            <p className="mt-7 max-w-2xl text-lg leading-8 text-white/68">Curated digital packs for C#, .NET, ASP.NET Core and software engineering practice. Clean files, direct delivery, and study resources made for repeat use.</p>
-            <div className="mt-9 flex flex-wrap gap-4">
-              <a href="#catalog" className="rounded-full bg-[#d6ff5f] px-8 py-4 font-black text-black transition hover:-translate-y-1">View catalog</a>
-              <Link href={"/product/" + featured.slug} className="rounded-full border border-white/20 px-8 py-4 font-black text-white transition hover:bg-white/10">Open complete bundle</Link>
+      <section className="relative overflow-hidden px-5 py-16 md:px-8 md:py-24">
+        <div className="absolute inset-0 opacity-[0.16] [background-image:linear-gradient(#ffffff_1px,transparent_1px),linear-gradient(90deg,#ffffff_1px,transparent_1px)] [background-size:56px_56px]" />
+        <div className="relative mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="self-end">
+            <p className="mb-5 inline-flex border border-[#f5c84b]/35 px-4 py-2 text-xs font-black uppercase tracking-[0.24em] text-[#f5c84b]">Digital download library</p>
+            <h1 className="max-w-3xl text-5xl font-black leading-[0.98] md:text-7xl">Choose files through a cleaner study desk.</h1>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-white/62">Browse downloadable packs by use case, preview the included resources, then open a product dossier with checkout. The flow is built like a library desk instead of a simple card wall.</p>
+            <div className="mt-8 flex flex-wrap gap-4">
+              <a href="#library" className="rounded-full bg-[#f5c84b] px-8 py-4 font-black text-[#14100a] transition hover:-translate-y-1">Browse products</a>
+              <Link href="/pricing" className="rounded-full border border-white/18 px-8 py-4 font-black text-white transition hover:bg-white/8">Compare pricing</Link>
             </div>
-            <div className="mt-10 grid max-w-2xl grid-cols-3 gap-3 text-center text-sm font-bold text-white/70">
-              {[["8", "digital packs"], ["PDF", "instant access"], ["Paddle", "secure checkout"]].map(([n, t]) => (
-                <div key={t} className="rounded-2xl border border-white/10 bg-white/[.06] p-4">
-                  <p className="text-3xl font-black text-[#d6ff5f]">{n}</p>
-                  <p className="mt-1">{t}</p>
+          </div>
+
+          <div className="grid gap-4 rounded-[2rem] border border-white/12 bg-white/[0.05] p-4 shadow-2xl md:grid-cols-[0.85fr_1.15fr]">
+            <div className="rounded-[1.5rem] bg-[#151b23] p-5">
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#86e3d0]">Library stats</p>
+              <div className="mt-6 grid gap-3">
+                <div className="border border-white/10 bg-white/[0.04] p-4">
+                  <p className="text-4xl font-black">{products.length}</p>
+                  <p className="mt-1 text-sm text-white/55">active packs</p>
                 </div>
+                <div className="border border-white/10 bg-white/[0.04] p-4">
+                  <p className="text-4xl font-black">EUR {totalValue}</p>
+                  <p className="mt-1 text-sm text-white/55">full catalog value</p>
+                </div>
+                <div className="border border-white/10 bg-white/[0.04] p-4">
+                  <p className="text-4xl font-black">PDF</p>
+                  <p className="mt-1 text-sm text-white/55">digital delivery</p>
+                </div>
+              </div>
+            </div>
+            <div className="rounded-[1.5rem] bg-[#f7f2e8] p-6 text-[#14100a]">
+              <div className="flex items-center justify-between gap-4">
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-[#087f72]">Selected pack</p>
+                <p className="bg-[#14100a] px-4 py-2 text-sm font-black text-white">{activeProduct.price}</p>
+              </div>
+              <h2 className="mt-8 text-4xl font-black leading-tight">{activeProduct.name}</h2>
+              <p className="mt-4 leading-7 text-black/62">{activeProduct.description}</p>
+              <div className="mt-6 grid gap-2">
+                {activeProduct.includes.map((item) => (
+                  <div key={item} className="flex items-center justify-between border-b border-black/10 py-3 text-sm font-bold">
+                    <span>{item}</span>
+                    <span className="text-[#087f72]">included</span>
+                  </div>
+                ))}
+              </div>
+              <Link href={"/product/" + activeProduct.slug} className="mt-7 block rounded-full bg-[#14100a] px-6 py-4 text-center font-black text-white transition hover:-translate-y-0.5">Open product dossier</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="library" className="border-y border-white/10 bg-[#111820] px-5 py-16 md:px-8">
+        <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[330px_1fr]">
+          <aside className="lg:sticky lg:top-24 lg:self-start">
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-[#86e3d0]">Browse mode</p>
+            <h2 className="mt-3 text-4xl font-black">Library desk</h2>
+            <div className="mt-6 flex flex-wrap gap-2">
+              {filters.map((filter) => (
+                <button key={filter} onClick={() => setActiveFilter(filter)} className={"rounded-full px-4 py-2 text-sm font-black transition " + (activeFilter === filter ? "bg-[#f5c84b] text-[#14100a]" : "bg-white/8 text-white/66 hover:bg-white/12")}>{filter}</button>
               ))}
             </div>
-          </div>
+            <p className="mt-6 leading-7 text-white/55">Click a row to preview the pack on the right, or open the full product page for checkout.</p>
+          </aside>
 
-          <div className="animate-float rounded-[2rem] border border-white/12 bg-[#1d1b17] p-5 shadow-2xl">
-            <div className="rounded-[1.5rem] bg-[#f6f4ec] p-5 text-[#16130f]">
-              <div className="flex items-center justify-between border-b border-black/10 pb-4">
-                <p className="text-sm font-black uppercase tracking-[0.22em] text-[#607000]">Featured library</p>
-                <p className="rounded-full bg-black px-4 py-2 text-sm font-black text-white">{featured.price}</p>
-              </div>
-              <h2 className="mt-6 text-4xl font-black">{featured.name}</h2>
-              <p className="mt-4 leading-7 text-black/60">{featured.shortDescription}</p>
-              <div className="mt-7 grid gap-3">
-                {featured.includes.map((item) => <div key={item} className="rounded-2xl bg-white px-4 py-3 font-bold shadow-sm">{item}</div>)}
-              </div>
-              <Link href={"/product/" + featured.slug} className="mt-7 block rounded-2xl bg-[#11100d] px-6 py-4 text-center font-black text-white">View product</Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-[#f6f4ec] px-6 py-20 md:px-8">
-        <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-3">
-          {[["01", "Choose a pack", "Pick a focused programming pack or the full DevShelf library."], ["02", "Pay securely", "Checkout is handled by Paddle with card and supported payment methods."], ["03", "Receive files", "A download link is sent to the checkout email after payment confirmation."]].map(([n, title, text]) => (
-            <div key={n} className="rounded-[1.75rem] bg-white p-7 shadow-[0_18px_55px_rgba(22,19,15,.08)]">
-              <p className="text-sm font-black uppercase tracking-[0.25em] text-[#607000]">{n}</p>
-              <h3 className="mt-4 text-2xl font-black">{title}</h3>
-              <p className="mt-3 leading-7 text-black/58">{text}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section id="catalog" className="bg-[#ede8dc] px-6 py-24 md:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="mb-12 flex flex-wrap items-end justify-between gap-6">
-            <div>
-              <p className="font-black uppercase tracking-[0.28em] text-[#607000]">Catalog</p>
-              <h2 className="mt-3 text-5xl font-black md:text-6xl">Programming files and courses</h2>
-            </div>
-            <Link href="/pricing" className="border-b-4 border-[#d6ff5f] pb-2 font-black">View all pricing</Link>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-            {products.map((product, index) => (
-              <Link key={product.slug} href={"/product/" + product.slug} className={"group flex min-h-[430px] flex-col rounded-[1.6rem] border p-7 shadow-[0_20px_60px_rgba(22,19,15,.08)] transition duration-300 hover:-translate-y-2 " + (index === 1 ? "border-[#11100d] bg-[#11100d] text-white" : "border-black/8 bg-[#fffdf8]")}>
-                <p className={"text-xs font-black uppercase tracking-[0.28em] " + (index === 1 ? "text-[#d6ff5f]" : "text-[#607000]")}>{product.tag}</p>
-                <h3 className="mt-5 text-3xl font-black leading-tight">{product.name}</h3>
-                <p className={"mt-5 leading-7 " + (index === 1 ? "text-white/66" : "text-black/58")}>{product.shortDescription}</p>
-                <div className="mt-auto">
-                  <p className="text-5xl font-black">{product.price.replace("?", "")} EUR</p>
-                  <div className={"mt-7 rounded-full px-6 py-4 text-center font-black transition group-hover:scale-[1.02] " + (index === 1 ? "bg-[#d6ff5f] text-black" : "bg-[#11100d] text-white")}>View product</div>
-                </div>
-              </Link>
+          <div className="grid gap-4">
+            {visibleProducts.map((product, index) => (
+              <button key={product.slug} onClick={() => setActiveSlug(product.slug)} className={"grid gap-4 border p-5 text-left transition hover:-translate-y-1 md:grid-cols-[72px_1fr_auto] md:items-center " + (activeSlug === product.slug ? "border-[#f5c84b] bg-[#f5c84b] text-[#14100a]" : "border-white/10 bg-white/[0.04] text-white hover:bg-white/[0.07]")}>
+                <span className={"flex h-14 w-14 items-center justify-center rounded-full text-lg font-black " + (activeSlug === product.slug ? "bg-[#14100a] text-white" : "bg-[#f7f2e8] text-[#14100a]")}>{String(index + 1).padStart(2, "0")}</span>
+                <span>
+                  <span className="block text-xs font-black uppercase tracking-[0.22em] opacity-70">{product.tag}</span>
+                  <span className="mt-2 block text-2xl font-black">{product.name}</span>
+                  <span className="mt-2 block leading-7 opacity-70">{product.shortDescription}</span>
+                </span>
+                <span className="text-2xl font-black">{product.price}</span>
+              </button>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="bg-[#f6f4ec] px-6 py-24 md:px-8">
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.8fr_1.2fr]">
+      <section className="bg-[#f7f2e8] px-5 py-20 text-[#14100a] md:px-8">
+        <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
-            <p className="font-black uppercase tracking-[0.28em] text-[#607000]">FAQ</p>
-            <h2 className="mt-3 text-5xl font-black">Questions before checkout</h2>
-            <Link href="/contact" className="mt-8 inline-block rounded-full bg-[#11100d] px-8 py-4 font-black text-white">Contact support</Link>
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-[#087f72]">Delivery flow</p>
+            <h2 className="mt-3 text-5xl font-black">Simple after payment.</h2>
           </div>
-          <div className="space-y-4">
-            {faqs.map(([q, a], index) => (
-              <div key={q} className="rounded-[1.4rem] bg-white shadow-sm">
-                <button onClick={() => setOpen(open === index ? null : index)} className="flex w-full items-center justify-between gap-4 px-7 py-6 text-left text-xl font-black">{q}<span>{open === index ? "-" : "+"}</span></button>
-                {open === index && <p className="px-7 pb-6 leading-7 text-black/60">{a}</p>}
+          <div className="grid gap-4 md:grid-cols-3">
+            {deliverySteps.map(([title, text], index) => (
+              <div key={title} className="border border-black/10 bg-white p-6 shadow-[0_18px_50px_rgba(20,16,10,.08)]">
+                <p className="text-4xl font-black text-[#087f72]">{index + 1}</p>
+                <h3 className="mt-5 text-2xl font-black">{title}</h3>
+                <p className="mt-3 leading-7 text-black/58">{text}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <footer className="bg-[#11100d] px-6 py-10 text-white md:px-8">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-5 text-sm text-white/60">
-          <p>? DevShelf Academy ? Digital programming products</p>
+      <section className="bg-[#0d1117] px-5 py-20 md:px-8">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.8fr_1.2fr]">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-[#86e3d0]">FAQ</p>
+            <h2 className="mt-3 text-5xl font-black">Before checkout</h2>
+            <Link href="/contact" className="mt-8 inline-block rounded-full bg-[#f5c84b] px-8 py-4 font-black text-[#14100a]">Contact support</Link>
+          </div>
+          <div className="space-y-3">
+            {faqs.map(([question, answer], index) => (
+              <div key={question} className="border border-white/10 bg-white/[0.04]">
+                <button onClick={() => setOpenFaq(openFaq === index ? null : index)} className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left text-xl font-black">
+                  <span>{question}</span>
+                  <span>{openFaq === index ? "Close" : "Open"}</span>
+                </button>
+                {openFaq === index && <p className="px-6 pb-6 leading-7 text-white/60">{answer}</p>}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <footer className="border-t border-white/10 bg-[#0d1117] px-5 py-10 text-white md:px-8">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-5 text-sm text-white/55">
+          <p>DevShelf Academy - Digital products and downloadable study files</p>
           <div className="flex flex-wrap gap-5">
-            <Link href="/pricing">Pricing</Link><Link href="/delivery">Delivery</Link><Link href="/terms">Terms</Link><Link href="/privacy">Privacy</Link><Link href="/refund-policy">Refund</Link><Link href="/contact">Contact</Link>
+            <Link href="/pricing">Pricing</Link>
+            <Link href="/delivery">Delivery</Link>
+            <Link href="/terms">Terms</Link>
+            <Link href="/privacy">Privacy</Link>
+            <Link href="/refund-policy">Refund</Link>
+            <Link href="/contact">Contact</Link>
           </div>
         </div>
       </footer>
-
-      <style jsx global>{"@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}.animate-rise{animation:rise .75s ease-out both}.animate-float{animation:float 5s ease-in-out infinite}"}</style>
     </main>
   );
 }

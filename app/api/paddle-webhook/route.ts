@@ -168,7 +168,7 @@ export async function POST(req: Request) {
     const sourceDomain = data.custom_data?.sourceDomain || req.headers.get("host") || "devshelf.company";
     if (!shouldProcessSourceDomain(sourceDomain)) return new Response("OK", { status: 200 });
 
-    const productId = data.custom_data?.productId || "advanced-csharp-course";
+    const productId = data.custom_data?.productId || "advanced-study-vault";
     const product = productMap[productId];
     const payment = eventType === "transaction.payment_failed" ? latestFailedPayment(data.payments) : latestPayment(data.payments);
     const transactionEventId = paymentFingerprint(eventType, data.id, payment);
