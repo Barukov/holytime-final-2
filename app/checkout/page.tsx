@@ -58,14 +58,14 @@ export default function CheckoutPage() {
   useEffect(() => { if (scriptLoaded) openCheckout(); }, [openCheckout, scriptLoaded]);
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#11100d] px-6 text-white">
+    <main className="flex min-h-screen items-center justify-center bg-[#101014] px-6 text-white">
       <Script src="https://cdn.paddle.com/paddle/v2/paddle.js" strategy="afterInteractive" onLoad={() => setScriptLoaded(true)} />
       <div className="max-w-xl text-center">
-        <p className="mb-3 font-black uppercase tracking-[0.25em] text-[#d6ff5f]">DevShelf Academy</p>
+        <p className="mb-3 font-black uppercase tracking-[0.25em] text-[#c8ff4d]">DevShelf Academy</p>
         <h1 className="mb-4 text-4xl font-black">Secure checkout</h1>
         <p className="mb-8 text-white/70">{message}</p>
         <div className="flex flex-wrap justify-center gap-3">
-          <button type="button" onClick={openCheckout} disabled={checkoutOpened} className="rounded-xl bg-[#d6ff5f] px-6 py-3 font-bold text-black transition hover:bg-[#e2ff80] disabled:cursor-not-allowed disabled:opacity-60">Open checkout</button>
+          <button type="button" onClick={openCheckout} disabled={checkoutOpened} className="rounded-xl bg-[#c8ff4d] px-6 py-3 font-bold text-black transition hover:bg-[#e2ff80] disabled:cursor-not-allowed disabled:opacity-60">Open checkout</button>
           <Link href="/" className="rounded-xl border border-white/25 px-6 py-3 font-bold text-white transition hover:bg-white/10">Back to products</Link>
         </div>
       </div>

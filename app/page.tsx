@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { products } from "./lib/products";
 
-const filters = ["All", "Starter", "Popular", "Practice", "Complete"];
+const filters = ["All", "Starter", "Popular", "Workflow", "Practice", "Resources", "Advanced", "Archive", "Complete"];
+const tickerProducts = [...products, ...products];
 
 const previewModes = [
   {
@@ -45,19 +46,25 @@ export default function Page() {
   const [activeSlug, setActiveSlug] = useState(products[1].slug);
   const [previewMode, setPreviewMode] = useState(previewModes[0].id);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [query, setQuery] = useState("");
 
   const visibleProducts = useMemo(() => {
-    if (activeFilter === "All") return products;
-    return products.filter((product) => product.tag === activeFilter);
-  }, [activeFilter]);
+    const normalizedQuery = query.trim().toLowerCase();
+    return products.filter((product) => {
+      const matchesFilter = activeFilter === "All" || product.tag === activeFilter;
+      const searchText = [product.name, product.tag, product.shortDescription, product.description, ...product.includes].join(" ").toLowerCase();
+      const matchesQuery = !normalizedQuery || searchText.includes(normalizedQuery);
+      return matchesFilter && matchesQuery;
+    });
+  }, [activeFilter, query]);
 
   const activeProduct = products.find((product) => product.slug === activeSlug) || products[0];
   const activePreview = previewModes.find((mode) => mode.id === previewMode) || previewModes[0];
   const totalValue = products.reduce((sum, product) => sum + product.amount, 0);
 
   return (
-    <main className="min-h-screen bg-[#0d1117] text-[#f7f2e8]">
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0d1117]/92 backdrop-blur">
+    <main className="min-h-screen bg-[#101014] text-[#f4f6fb]">
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#101014]/92 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5 md:px-8">
           <Link href="/" className="text-xl font-black tracking-tight md:text-2xl">DevShelf Academy</Link>
           <nav className="hidden items-center gap-6 text-sm font-bold text-white/62 md:flex">
@@ -69,46 +76,46 @@ export default function Page() {
             <Link href="/refund-policy">Refunds</Link>
             <Link href="/contact">Contact</Link>
           </nav>
-          <a href="#library" className="rounded-full bg-[#f5c84b] px-5 py-3 text-sm font-black text-[#14100a] transition hover:-translate-y-0.5">Open library</a>
+          <a href="#library" className="rounded-full bg-[#6d8cff] px-5 py-3 text-sm font-black text-white shadow-[0_14px_32px_rgba(109,140,255,.28)] transition hover:-translate-y-0.5 hover:bg-[#c8ff4d] hover:text-[#101014]">Open library</a>
         </div>
       </header>
 
       <section className="relative overflow-hidden px-5 py-16 md:px-8 md:py-24">
         <div className="absolute inset-0 opacity-[0.12] [background-image:linear-gradient(#ffffff_1px,transparent_1px),linear-gradient(90deg,#ffffff_1px,transparent_1px)] [background-size:56px_56px]" />
-        <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#f5c84b]/12 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-[#0d1117] to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#6d8cff]/18 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-[#101014] to-transparent" />
         <div className="relative mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="self-center">
-            <p className="mb-5 inline-flex border border-[#f5c84b]/35 px-4 py-2 text-xs font-black uppercase tracking-[0.24em] text-[#f5c84b]">Digital download library</p>
+            <p className="mb-5 inline-flex border border-[#c8ff4d]/35 px-4 py-2 text-xs font-black uppercase tracking-[0.24em] text-[#c8ff4d]">Digital download library</p>
             <h1 className="max-w-3xl text-5xl font-black leading-[0.98] md:text-7xl">Choose files through a cleaner study desk.</h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-white/62">Browse downloadable packs by use case, preview the included resources, then open a product dossier with checkout. The flow is built like a library desk instead of a simple card wall.</p>
             <div className="mt-8 flex flex-wrap gap-4">
-              <a href="#library" className="rounded-full bg-[#f5c84b] px-8 py-4 font-black text-[#14100a] transition hover:-translate-y-1">Browse products</a>
+              <a href="#library" className="rounded-full bg-[#6d8cff] px-8 py-4 font-black text-white shadow-[0_18px_42px_rgba(109,140,255,.25)] transition hover:-translate-y-1 hover:bg-[#c8ff4d] hover:text-[#101014]">Browse products</a>
               <Link href="/pricing" className="rounded-full border border-white/18 px-8 py-4 font-black text-white transition hover:bg-white/8">Compare pricing</Link>
             </div>
           </div>
 
           <div className="relative min-h-[610px] overflow-hidden border border-white/12 bg-[#101720] shadow-[0_34px_90px_rgba(0,0,0,.38)]">
-            <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(245,200,75,.14),transparent_34%),linear-gradient(180deg,rgba(134,227,208,.10),transparent_42%)]" />
-            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#f5c84b] to-transparent" />
-            <div className="scan-line absolute left-0 right-0 top-16 h-px bg-[#86e3d0]/55" />
+            <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(109,140,255,.20),transparent_34%),linear-gradient(180deg,rgba(255,107,122,.12),transparent_42%)]" />
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#6d8cff] to-transparent" />
+            <div className="scan-line absolute left-0 right-0 top-16 h-px bg-[#c8ff4d]/55" />
 
             <div className="absolute left-6 top-6 z-10 flex items-center gap-2">
               <span className="h-3 w-3 rounded-full bg-[#ff6d5a]" />
-              <span className="h-3 w-3 rounded-full bg-[#f5c84b]" />
-              <span className="h-3 w-3 rounded-full bg-[#86e3d0]" />
+              <span className="h-3 w-3 rounded-full bg-[#6d8cff]" />
+              <span className="h-3 w-3 rounded-full bg-[#c8ff4d]" />
             </div>
 
             <div className="absolute left-6 top-20 z-10 w-[190px] border border-white/10 bg-white/[0.05] p-5 backdrop-blur">
-              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#86e3d0]">Live shelf</p>
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#c8ff4d]">Live shelf</p>
               <div className="mt-5 space-y-4">
                 <div>
                   <div className="flex justify-between text-xs font-bold text-white/55"><span>Packs</span><span>{products.length}/8</span></div>
-                  <div className="mt-2 h-2 bg-white/10"><div className="load-bar h-full bg-[#f5c84b]" /></div>
+                  <div className="mt-2 h-2 bg-white/10"><div className="load-bar h-full bg-[#6d8cff]" /></div>
                 </div>
                 <div>
                   <div className="flex justify-between text-xs font-bold text-white/55"><span>Files</span><span>PDF</span></div>
-                  <div className="mt-2 h-2 bg-white/10"><div className="load-bar load-bar-delay h-full bg-[#86e3d0]" /></div>
+                  <div className="mt-2 h-2 bg-white/10"><div className="load-bar load-bar-delay h-full bg-[#c8ff4d]" /></div>
                 </div>
                 <div className="grid grid-cols-2 gap-2 pt-2">
                   <div className="border border-white/10 p-3">
@@ -128,12 +135,12 @@ export default function Page() {
                 <button
                   key={product.slug}
                   onClick={() => setActiveSlug(product.slug)}
-                  className={"stack-sheet absolute h-[225px] w-[180px] border p-5 text-left shadow-2xl transition duration-500 hover:-translate-y-4 " + (activeSlug === product.slug ? "border-[#f5c84b] bg-[#f5c84b] text-[#14100a]" : "border-white/16 bg-[#f7f2e8] text-[#14100a]")}
+                  className={"stack-sheet absolute h-[225px] w-[180px] border p-5 text-left shadow-2xl transition duration-500 hover:-translate-y-4 " + (activeSlug === product.slug ? "border-[#6d8cff] bg-[#6d8cff] text-white" : "border-white/16 bg-[#f4f6fb] text-[#101014]")}
                   style={{ left: `${index * 34}px`, top: `${index * 18}px`, zIndex: index + 1, animationDelay: `${index * 120}ms` }}
                 >
                   <span className="block text-[10px] font-black uppercase tracking-[0.22em] opacity-65">{product.tag}</span>
                   <span className="mt-5 block text-xl font-black leading-tight">{product.name}</span>
-                  <span className="mt-5 block h-1.5 w-16 bg-[#087f72]" />
+                  <span className="mt-5 block h-1.5 w-16 bg-[#ff6b7a]" />
                   <span className="mt-3 block h-1.5 w-24 bg-black/12" />
                   <span className="mt-2 block h-1.5 w-20 bg-black/12" />
                   <span className="absolute bottom-5 left-5 text-sm font-black">{product.price}</span>
@@ -141,10 +148,10 @@ export default function Page() {
               ))}
             </div>
 
-            <div className="preview-panel absolute bottom-8 right-6 top-24 z-20 w-[min(380px,calc(100%-48px))] border border-black/10 bg-[#f7f2e8] p-6 text-[#14100a] shadow-[0_26px_70px_rgba(0,0,0,.35)] md:right-8">
+            <div className="preview-panel absolute bottom-8 right-6 top-24 z-20 w-[min(380px,calc(100%-48px))] border border-black/10 bg-[#f4f6fb] p-6 text-[#101014] shadow-[0_26px_70px_rgba(0,0,0,.35)] md:right-8">
               <div className="flex items-center justify-between gap-4">
-                <p className="text-xs font-black uppercase tracking-[0.22em] text-[#087f72]">Selected pack</p>
-                <p className="bg-[#14100a] px-4 py-2 text-sm font-black text-white">{activeProduct.price}</p>
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-[#6d8cff]">Selected pack</p>
+                <p className="bg-[#101014] px-4 py-2 text-sm font-black text-white">{activeProduct.price}</p>
               </div>
               <h2 className="mt-7 text-4xl font-black leading-tight">{activeProduct.name}</h2>
               <p className="mt-4 leading-7 text-black/62">{activeProduct.description}</p>
@@ -152,13 +159,13 @@ export default function Page() {
                 {activeProduct.includes.map((item, index) => (
                   <div key={item} className="include-row flex items-center justify-between border-b border-black/10 pb-3 text-sm font-bold" style={{ animationDelay: `${index * 90}ms` }}>
                     <span>{item}</span>
-                    <span className="text-[#087f72]">ready</span>
+                    <span className="text-[#6d8cff]">ready</span>
                   </div>
                 ))}
               </div>
-              <Link href={"/product/" + activeProduct.slug} className="mt-7 block rounded-full bg-[#14100a] px-6 py-4 text-center font-black text-white transition hover:-translate-y-1 hover:bg-[#087f72]">Open product dossier</Link>
+              <Link href={"/product/" + activeProduct.slug} className="mt-7 block rounded-full bg-[#101014] px-6 py-4 text-center font-black text-white transition hover:-translate-y-1 hover:bg-[#6d8cff]">Open product dossier</Link>
               <div className="mt-5 flex items-center gap-3 text-xs font-bold text-black/45">
-                <span className="h-2 w-2 rounded-full bg-[#087f72]" />
+                <span className="h-2 w-2 rounded-full bg-[#c8ff4d]" />
                 <span>Download delivery after payment</span>
               </div>
             </div>
@@ -168,11 +175,26 @@ export default function Page() {
         </div>
       </section>
 
-      <section className="relative overflow-hidden bg-[#f7f2e8] px-5 py-20 text-[#14100a] md:px-8">
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,127,114,.10),transparent_42%),repeating-linear-gradient(90deg,rgba(20,16,10,.035)_0_1px,transparent_1px_84px)]" />
+      <section className="overflow-hidden border-y border-white/10 bg-[#15151b] py-5">
+        <div className="product-ticker-track flex w-max gap-3">
+          {tickerProducts.map((product, index) => (
+            <Link
+              key={product.slug + index}
+              href={"/product/" + product.slug}
+              className="group flex items-center gap-4 border border-white/10 bg-white/[0.045] px-5 py-3 text-sm font-black text-white/72 transition hover:border-[#c8ff4d] hover:bg-[#c8ff4d] hover:text-[#101014]"
+            >
+              <span>{product.name}</span>
+              <span className="text-[#6d8cff] transition group-hover:text-[#101014]">{product.price}</span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="relative overflow-hidden bg-[#f4f6fb] px-5 py-20 text-[#101014] md:px-8">
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(109,140,255,.10),transparent_42%),repeating-linear-gradient(90deg,rgba(16,16,20,.035)_0_1px,transparent_1px_84px)]" />
         <div className="relative mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.24em] text-[#087f72]">Preview lab</p>
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-[#6d8cff]">Preview lab</p>
             <h2 className="mt-3 max-w-3xl text-5xl font-black leading-tight md:text-6xl">Show value before checkout.</h2>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-black/62">Each pack is presented as a usable digital workspace, not just a download link. The buyer can understand what the product contains before opening checkout.</p>
 
@@ -181,7 +203,7 @@ export default function Page() {
                 <button
                   key={mode.id}
                   onClick={() => setPreviewMode(mode.id)}
-                  className={"border px-5 py-4 text-left font-black transition duration-300 hover:-translate-y-1 " + (previewMode === mode.id ? "border-[#14100a] bg-[#14100a] text-white" : "border-black/10 bg-white text-[#14100a] hover:border-[#087f72]")}
+                  className={"border px-5 py-4 text-left font-black transition duration-300 hover:-translate-y-1 " + (previewMode === mode.id ? "border-[#101014] bg-[#101014] text-white" : "border-black/10 bg-white text-[#101014] hover:border-[#6d8cff]")}
                 >
                   {mode.id}
                 </button>
@@ -190,36 +212,36 @@ export default function Page() {
 
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
               <div className="border border-black/10 bg-white p-5">
-                <p className="text-3xl font-black">01</p>
+                <p className="text-3xl font-black text-[#6d8cff]">01</p>
                 <p className="mt-2 text-sm font-bold text-black/55">Clear product structure</p>
               </div>
               <div className="border border-black/10 bg-white p-5">
-                <p className="text-3xl font-black">PDF</p>
+                <p className="text-3xl font-black text-[#ff6b7a]">PDF</p>
                 <p className="mt-2 text-sm font-bold text-black/55">Readable downloadable files</p>
               </div>
               <div className="border border-black/10 bg-white p-5">
-                <p className="text-3xl font-black">24h</p>
+                <p className="text-3xl font-black text-[#6d8cff]">24h</p>
                 <p className="mt-2 text-sm font-bold text-black/55">Support response target</p>
               </div>
             </div>
           </div>
 
           <div className="relative min-h-[520px]">
-            <div className="absolute left-0 top-12 hidden h-[390px] w-[260px] rotate-[-7deg] border border-black/10 bg-[#f5c84b] shadow-[0_25px_70px_rgba(20,16,10,.14)] md:block" />
-            <div className="absolute right-0 top-0 hidden h-[420px] w-[290px] rotate-[5deg] border border-black/10 bg-[#86e3d0] shadow-[0_25px_70px_rgba(20,16,10,.14)] md:block" />
+            <div className="absolute left-0 top-12 hidden h-[390px] w-[260px] rotate-[-7deg] border border-black/10 bg-[#6d8cff] shadow-[0_25px_70px_rgba(16,16,20,.14)] md:block" />
+            <div className="absolute right-0 top-0 hidden h-[420px] w-[290px] rotate-[5deg] border border-black/10 bg-[#c8ff4d] shadow-[0_25px_70px_rgba(16,16,20,.14)] md:block" />
             <div className="sample-document relative mx-auto max-w-[430px] border border-black/10 bg-white p-7 shadow-[0_35px_90px_rgba(20,16,10,.18)]">
               <div className="flex items-start justify-between gap-4 border-b border-black/10 pb-5">
                 <div>
-                  <p className="text-xs font-black uppercase tracking-[0.24em] text-[#087f72]">DevShelf sample</p>
+                  <p className="text-xs font-black uppercase tracking-[0.24em] text-[#6d8cff]">DevShelf sample</p>
                   <h3 className="mt-3 text-3xl font-black">{activePreview.title}</h3>
                 </div>
-                <span className="bg-[#14100a] px-3 py-2 text-xs font-black text-white">PDF</span>
+                <span className="bg-[#101014] px-3 py-2 text-xs font-black text-white">PDF</span>
               </div>
               <p className="mt-5 leading-7 text-black/62">{activePreview.text}</p>
               <div className="mt-7 space-y-3">
                 {activePreview.lines.map((line, index) => (
-                  <div key={line} className="sample-line flex items-center gap-3 border border-black/10 bg-[#f7f2e8] p-4" style={{ animationDelay: `${index * 95}ms` }}>
-                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#087f72] text-xs font-black text-white">{index + 1}</span>
+                  <div key={line} className="sample-line flex items-center gap-3 border border-black/10 bg-[#f4f6fb] p-4" style={{ animationDelay: `${index * 95}ms` }}>
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#6d8cff] text-xs font-black text-white">{index + 1}</span>
                     <span className="font-bold">{line}</span>
                   </div>
                 ))}
@@ -233,12 +255,12 @@ export default function Page() {
         </div>
       </section>
 
-      <section id="library" className="relative overflow-hidden border-y border-white/10 bg-[#111820] px-5 py-20 md:px-8">
+      <section id="library" className="relative overflow-hidden border-y border-white/10 bg-[#15151b] px-5 py-20 md:px-8">
         <div className="absolute inset-0 opacity-[0.08] [background-image:linear-gradient(90deg,#fff_1px,transparent_1px)] [background-size:92px_92px]" />
         <div className="relative mx-auto max-w-7xl">
           <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.24em] text-[#86e3d0]">Browse mode</p>
+              <p className="text-xs font-black uppercase tracking-[0.24em] text-[#c8ff4d]">Browse mode</p>
               <h2 className="mt-3 text-5xl font-black">Library desk</h2>
             </div>
             <p className="max-w-xl leading-7 text-white/55">Filter packs, preview the active file set, then open the dossier page for checkout and delivery details.</p>
@@ -246,16 +268,16 @@ export default function Page() {
 
           <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
             <aside className="border border-white/10 bg-white/[0.04] p-5 lg:sticky lg:top-24 lg:self-start">
-              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#f5c84b]">Filters</p>
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#c8ff4d]">Filters</p>
               <div className="mt-5 grid gap-2">
                 {filters.map((filter) => (
                   <button
                     key={filter}
                     onClick={() => setActiveFilter(filter)}
-                    className={"group flex items-center justify-between border px-4 py-4 text-left text-sm font-black transition duration-300 " + (activeFilter === filter ? "border-[#f5c84b] bg-[#f5c84b] text-[#14100a]" : "border-white/10 bg-[#151d27] text-white/65 hover:border-[#86e3d0] hover:text-white")}
+                    className={"group flex items-center justify-between border px-4 py-4 text-left text-sm font-black transition duration-300 " + (activeFilter === filter ? "border-[#6d8cff] bg-[#6d8cff] text-white" : "border-white/10 bg-[#1b1b23] text-white/65 hover:border-[#c8ff4d] hover:text-white")}
                   >
                     <span>{filter}</span>
-                    <span className={"h-2 w-2 rounded-full transition " + (activeFilter === filter ? "bg-[#14100a]" : "bg-white/18 group-hover:bg-[#86e3d0]")} />
+                    <span className={"h-2 w-2 rounded-full transition " + (activeFilter === filter ? "bg-white" : "bg-white/18 group-hover:bg-[#c8ff4d]")} />
                   </button>
                 ))}
               </div>
@@ -268,8 +290,30 @@ export default function Page() {
             </aside>
 
             <div className="space-y-6">
-              <div className="feature-strip relative overflow-hidden border border-[#f5c84b]/30 bg-[#f5c84b] p-6 text-[#14100a] shadow-[0_24px_70px_rgba(245,200,75,.13)] md:p-8">
-                <div className="absolute inset-y-0 right-0 w-1/3 bg-[repeating-linear-gradient(135deg,rgba(20,16,10,.12)_0_1px,transparent_1px_14px)]" />
+              <div className="grid gap-4 border border-white/10 bg-white/[0.045] p-4 shadow-[0_22px_70px_rgba(0,0,0,.18)] md:grid-cols-[1fr_auto] md:items-center">
+                <label className="block">
+                  <span className="text-xs font-black uppercase tracking-[0.22em] text-[#c8ff4d]">Command search</span>
+                  <input
+                    value={query}
+                    onChange={(event) => setQuery(event.target.value)}
+                    placeholder="Search packs, notes, worksheets..."
+                    className="mt-3 w-full border border-white/10 bg-[#101014] px-5 py-4 font-bold text-white outline-none transition placeholder:text-white/28 focus:border-[#6d8cff]"
+                  />
+                </label>
+                <div className="grid gap-2 sm:grid-cols-2 md:min-w-[260px]">
+                  <div className="border border-white/10 bg-[#101014] p-4">
+                    <p className="text-2xl font-black text-[#6d8cff]">{visibleProducts.length}</p>
+                    <p className="text-xs font-bold text-white/45">visible packs</p>
+                  </div>
+                  <div className="border border-white/10 bg-[#101014] p-4">
+                    <p className="text-2xl font-black text-[#c8ff4d]">PDF</p>
+                    <p className="text-xs font-bold text-white/45">ready files</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="feature-strip relative overflow-hidden border border-[#6d8cff]/35 bg-[#6d8cff] p-6 text-white shadow-[0_24px_70px_rgba(109,140,255,.18)] md:p-8">
+                <div className="absolute inset-y-0 right-0 w-1/3 bg-[repeating-linear-gradient(135deg,rgba(255,255,255,.16)_0_1px,transparent_1px_14px)]" />
                 <div className="relative grid gap-6 md:grid-cols-[1fr_auto] md:items-end">
                   <div>
                     <p className="text-xs font-black uppercase tracking-[0.24em] opacity-65">{activeProduct.tag}</p>
@@ -278,7 +322,7 @@ export default function Page() {
                   </div>
                   <div className="text-left md:text-right">
                     <p className="text-4xl font-black">{activeProduct.price}</p>
-                    <Link href={"/product/" + activeProduct.slug} className="mt-4 inline-flex rounded-full bg-[#14100a] px-6 py-3 text-sm font-black text-white transition hover:-translate-y-1 hover:bg-[#087f72]">Open dossier</Link>
+                    <Link href={"/product/" + activeProduct.slug} className="mt-4 inline-flex rounded-full bg-[#101014] px-6 py-3 text-sm font-black text-white transition hover:-translate-y-1 hover:bg-[#c8ff4d] hover:text-[#101014]">Open dossier</Link>
                   </div>
                 </div>
               </div>
@@ -288,35 +332,41 @@ export default function Page() {
                   <button
                     key={product.slug}
                     onClick={() => setActiveSlug(product.slug)}
-                    className={"catalog-tile group relative min-h-[245px] overflow-hidden border p-5 text-left transition duration-300 hover:-translate-y-2 " + (activeSlug === product.slug ? "border-[#f5c84b] bg-[#f7f2e8] text-[#14100a]" : "border-white/10 bg-white/[0.045] text-white hover:border-[#86e3d0] hover:bg-white/[0.075]")}
+                    className={"catalog-tile group relative min-h-[245px] overflow-hidden border p-5 text-left transition duration-300 hover:-translate-y-2 " + (activeSlug === product.slug ? "border-[#6d8cff] bg-[#f4f6fb] text-[#101014]" : "border-white/10 bg-white/[0.045] text-white hover:border-[#c8ff4d] hover:bg-white/[0.075]")}
                     style={{ animationDelay: `${index * 70}ms` }}
                   >
-                    <span className={"absolute right-5 top-5 text-sm font-black " + (activeSlug === product.slug ? "text-[#087f72]" : "text-white/35")}>{String(index + 1).padStart(2, "0")}</span>
-                    <span className={"inline-flex border px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] " + (activeSlug === product.slug ? "border-[#087f72]/30 text-[#087f72]" : "border-white/10 text-[#86e3d0]")}>{product.tag}</span>
+                    <span className={"absolute right-5 top-5 text-sm font-black " + (activeSlug === product.slug ? "text-[#6d8cff]" : "text-white/35")}>{String(index + 1).padStart(2, "0")}</span>
+                    <span className={"inline-flex border px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] " + (activeSlug === product.slug ? "border-[#6d8cff]/30 text-[#6d8cff]" : "border-white/10 text-[#c8ff4d]")}>{product.tag}</span>
                     <span className="mt-5 block text-2xl font-black leading-tight">{product.name}</span>
                     <span className={"mt-4 block leading-7 " + (activeSlug === product.slug ? "text-black/58" : "text-white/55")}>{product.shortDescription}</span>
                     <span className="absolute bottom-5 left-5 text-2xl font-black">{product.price}</span>
-                    <span className={"absolute bottom-6 right-5 h-9 w-9 rounded-full transition group-hover:translate-x-1 " + (activeSlug === product.slug ? "bg-[#14100a]" : "bg-[#f5c84b]")}>
-                      <span className={"absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full " + (activeSlug === product.slug ? "bg-white" : "bg-[#14100a]")} />
+                    <span className={"absolute bottom-6 right-5 h-9 w-9 rounded-full transition group-hover:translate-x-1 " + (activeSlug === product.slug ? "bg-[#101014]" : "bg-[#6d8cff]")}>
+                      <span className={"absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full " + (activeSlug === product.slug ? "bg-white" : "bg-white")} />
                     </span>
                   </button>
                 ))}
               </div>
+              {visibleProducts.length === 0 && (
+                <div className="border border-white/10 bg-white/[0.045] p-8 text-center">
+                  <p className="text-2xl font-black">No matching packs</p>
+                  <p className="mt-3 text-white/55">Clear the search or switch the filter.</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </section>
 
-      <section className="bg-[#f7f2e8] px-5 py-20 text-[#14100a] md:px-8">
+      <section className="bg-[#f4f6fb] px-5 py-20 text-[#101014] md:px-8">
         <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.24em] text-[#087f72]">Delivery flow</p>
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-[#6d8cff]">Delivery flow</p>
             <h2 className="mt-3 text-5xl font-black">Simple after payment.</h2>
           </div>
           <div className="grid gap-4 md:grid-cols-3">
             {deliverySteps.map(([title, text], index) => (
               <div key={title} className="border border-black/10 bg-white p-6 shadow-[0_18px_50px_rgba(20,16,10,.08)]">
-                <p className="text-4xl font-black text-[#087f72]">{index + 1}</p>
+                <p className="text-4xl font-black text-[#6d8cff]">{index + 1}</p>
                 <h3 className="mt-5 text-2xl font-black">{title}</h3>
                 <p className="mt-3 leading-7 text-black/58">{text}</p>
               </div>
@@ -325,12 +375,12 @@ export default function Page() {
         </div>
       </section>
 
-      <section className="bg-[#0d1117] px-5 py-20 md:px-8">
+      <section className="bg-[#101014] px-5 py-20 md:px-8">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.24em] text-[#86e3d0]">FAQ</p>
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-[#c8ff4d]">FAQ</p>
             <h2 className="mt-3 text-5xl font-black">Before checkout</h2>
-            <Link href="/contact" className="mt-8 inline-block rounded-full bg-[#f5c84b] px-8 py-4 font-black text-[#14100a]">Contact support</Link>
+            <Link href="/contact" className="mt-8 inline-block rounded-full bg-[#6d8cff] px-8 py-4 font-black text-white transition hover:bg-[#c8ff4d] hover:text-[#101014]">Contact support</Link>
           </div>
           <div className="space-y-3">
             {faqs.map(([question, answer], index) => (
@@ -346,7 +396,20 @@ export default function Page() {
         </div>
       </section>
 
-      <footer className="border-t border-white/10 bg-[#0d1117] px-5 py-10 text-white md:px-8">
+      <section className="bg-[#ff6b7a] px-5 py-16 text-[#101014] md:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.24em] opacity-65">Ready shelf</p>
+            <h2 className="mt-3 max-w-3xl text-4xl font-black leading-tight md:text-6xl">Open a pack, compare prices, or jump into the full library.</h2>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/pricing" className="rounded-full bg-[#101014] px-7 py-4 font-black text-white transition hover:-translate-y-1">View pricing</Link>
+            <Link href="/product/complete-digital-library" className="rounded-full bg-white px-7 py-4 font-black text-[#101014] transition hover:-translate-y-1">Full library</Link>
+          </div>
+        </div>
+      </section>
+
+      <footer className="border-t border-white/10 bg-[#101014] px-5 py-10 text-white md:px-8">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-5 text-sm text-white/55">
           <p>DevShelf Academy - Digital products and downloadable study files</p>
           <div className="flex flex-wrap gap-5">

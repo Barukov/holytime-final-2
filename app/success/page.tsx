@@ -28,13 +28,13 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
   if (!transactionId || !(await isPaidTransaction(transactionId))) redirect("/");
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#11100d] px-6 text-white">
+    <main className="flex min-h-screen items-center justify-center bg-[#101014] px-6 text-white">
       <div className="max-w-xl text-center">
-        <p className="mb-3 font-black uppercase tracking-[0.25em] text-[#d6ff5f]">DevShelf Academy</p>
+        <p className="mb-3 font-black uppercase tracking-[0.25em] text-[#c8ff4d]">DevShelf Academy</p>
         <h1 className="mb-4 text-4xl font-black">Order received</h1>
         <p className="mb-6 text-white/70">If your payment was successful, your digital product will be sent to your email shortly.</p>
         <p className="mb-8 text-sm text-white/40">Please do not refresh or retry payment unless you did not complete checkout.</p>
-        <Link href="/" className="inline-block rounded-xl bg-[#d6ff5f] px-6 py-3 font-bold text-black">Back to catalog</Link>
+        <Link href="/" className="inline-block rounded-xl bg-[#c8ff4d] px-6 py-3 font-bold text-black">Back to catalog</Link>
       </div>
     </main>
   );

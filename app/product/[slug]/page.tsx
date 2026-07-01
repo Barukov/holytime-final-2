@@ -19,7 +19,7 @@ export default function ProductPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [loading, setLoading] = useState(false);
 
-  if (!product) return <main className="min-h-screen bg-[#0d1117] p-10 text-white">Product not found</main>;
+  if (!product) return <main className="min-h-screen bg-[#101014] p-10 text-white">Product not found</main>;
 
   const canPay = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -47,11 +47,11 @@ export default function ProductPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0d1117] text-[#f7f2e8]">
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0d1117]/92 px-5 py-5 backdrop-blur md:px-8">
+    <main className="min-h-screen bg-[#101014] text-[#f4f6fb]">
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#101014]/92 px-5 py-5 backdrop-blur md:px-8">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <Link href="/" className="text-xl font-black md:text-2xl">DevShelf Academy</Link>
-          <Link href="/pricing" className="border border-white/14 px-5 py-3 text-sm font-black text-white transition hover:border-[#f5c84b] hover:text-[#f5c84b]">Pricing</Link>
+          <Link href="/pricing" className="border border-white/14 px-5 py-3 text-sm font-black text-white transition hover:border-[#6d8cff] hover:text-[#6d8cff]">Pricing</Link>
         </div>
       </header>
 
@@ -59,7 +59,7 @@ export default function ProductPage() {
         <div className="absolute inset-0 opacity-[0.08] [background-image:linear-gradient(#fff_1px,transparent_1px),linear-gradient(90deg,#fff_1px,transparent_1px)] [background-size:64px_64px]" />
         <div className="relative mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_430px]">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.24em] text-[#f5c84b]">{product.tag} dossier</p>
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-[#6d8cff]">{product.tag} dossier</p>
             <h1 className="mt-5 max-w-4xl text-5xl font-black leading-[0.98] md:text-7xl">{product.name}</h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-white/64">{product.description}</p>
 
@@ -80,13 +80,13 @@ export default function ProductPage() {
 
             <div className="mt-10 max-w-4xl border border-white/10 bg-[#101720] p-6 shadow-[0_24px_80px_rgba(0,0,0,.22)]">
               <div className="flex items-center justify-between border-b border-white/10 pb-5">
-                <p className="text-xs font-black uppercase tracking-[0.22em] text-[#86e3d0]">File preview</p>
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-[#c8ff4d]">File preview</p>
                 <p className="text-sm font-black text-white/45">Included resources</p>
               </div>
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 {product.includes.map((item, index) => (
                   <div key={item} className="include-row border border-white/10 bg-white/[0.04] p-4" style={{ animationDelay: `${index * 90}ms` }}>
-                    <p className="text-sm font-black text-[#f5c84b]">{String(index + 1).padStart(2, "0")}</p>
+                    <p className="text-sm font-black text-[#6d8cff]">{String(index + 1).padStart(2, "0")}</p>
                     <h3 className="mt-3 text-xl font-black">{item}</h3>
                     <p className="mt-2 text-sm leading-6 text-white/48">Part of the downloadable digital package.</p>
                   </div>
@@ -96,21 +96,21 @@ export default function ProductPage() {
           </div>
 
           <aside className="lg:sticky lg:top-28 lg:self-start">
-            <div className="border border-[#f5c84b]/28 bg-[#f7f2e8] p-6 text-[#14100a] shadow-[0_30px_85px_rgba(0,0,0,.34)]">
+            <div className="border border-[#6d8cff]/28 bg-[#f4f6fb] p-6 text-[#101014] shadow-[0_30px_85px_rgba(0,0,0,.34)]">
               <div className="flex items-start justify-between gap-4 border-b border-black/10 pb-5">
                 <div>
-                  <p className="text-xs font-black uppercase tracking-[0.22em] text-[#087f72]">Checkout</p>
+                  <p className="text-xs font-black uppercase tracking-[0.22em] text-[#6d8cff]">Checkout</p>
                   <h2 className="mt-3 text-3xl font-black">{product.name}</h2>
                 </div>
-                <p className="bg-[#14100a] px-4 py-3 text-xl font-black text-white">{product.price}</p>
+                <p className="bg-[#101014] px-4 py-3 text-xl font-black text-white">{product.price}</p>
               </div>
 
               <label className="mt-6 block">
                 <span className="text-sm font-black">Delivery email</span>
-                <input value={email} onChange={(event) => setEmail(event.target.value)} placeholder="your@email.com" className="mt-2 w-full border border-black/12 bg-white px-4 py-4 text-[#14100a] outline-none transition placeholder:text-black/28 focus:border-[#087f72]" />
+                <input value={email} onChange={(event) => setEmail(event.target.value)} placeholder="your@email.com" className="mt-2 w-full border border-black/12 bg-white px-4 py-4 text-[#101014] outline-none transition placeholder:text-black/28 focus:border-[#6d8cff]" />
               </label>
 
-              <button onClick={handlePayment} disabled={!canPay || loading} className={"mt-5 w-full px-6 py-4 font-black transition " + (canPay ? "bg-[#14100a] text-white hover:-translate-y-1 hover:bg-[#087f72]" : "bg-black/10 text-black/35")}>
+              <button onClick={handlePayment} disabled={!canPay || loading} className={"mt-5 w-full px-6 py-4 font-black transition " + (canPay ? "bg-[#101014] text-white hover:-translate-y-1 hover:bg-[#6d8cff]" : "bg-black/10 text-black/35")}>
                 {loading ? "Opening checkout..." : canPay ? "Proceed to payment" : "Enter email first"}
               </button>
 
@@ -133,10 +133,10 @@ export default function ProductPage() {
         </div>
       </section>
 
-      <section className="bg-[#f7f2e8] px-5 py-16 text-[#14100a] md:px-8">
+      <section className="bg-[#f4f6fb] px-5 py-16 text-[#101014] md:px-8">
         <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.82fr_1.18fr]">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.24em] text-[#087f72]">Product questions</p>
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-[#6d8cff]">Product questions</p>
             <h2 className="mt-3 text-5xl font-black">Before you buy</h2>
           </div>
           <div className="space-y-3">
@@ -153,13 +153,13 @@ export default function ProductPage() {
         </div>
       </section>
 
-      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-black/10 bg-white px-5 py-4 text-[#14100a] shadow-[0_-18px_50px_rgba(20,16,10,.1)]">
+      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-black/10 bg-white px-5 py-4 text-[#101014] shadow-[0_-18px_50px_rgba(20,16,10,.1)]">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
           <div>
             <p className="font-black">{product.name}</p>
             <p className="text-sm text-black/55">{product.price}</p>
           </div>
-          <a href="#top" onClick={(event) => { event.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="bg-[#14100a] px-6 py-3 text-sm font-black text-white">Buy now</a>
+          <a href="#top" onClick={(event) => { event.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="bg-[#101014] px-6 py-3 text-sm font-black text-white">Buy now</a>
         </div>
       </div>
     </main>

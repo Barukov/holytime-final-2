@@ -202,7 +202,7 @@ export async function POST(req: Request) {
 
     const downloadLink = buildDownloadLink(String(productId), sourceDomain);
     if (downloadLink && details.email !== "unknown") {
-      const html = "<h2>Thank you for your purchase</h2><p>Your digital product is ready:</p><p><strong>" + details.product + "</strong></p><p><a href=\"" + downloadLink + "\" style=\"display:inline-block;padding:12px 20px;background:#11100d;color:white;border-radius:8px;text-decoration:none;font-weight:bold;\">Download your product</a></p>";
+      const html = "<h2>Thank you for your purchase</h2><p>Your digital product is ready:</p><p><strong>" + details.product + "</strong></p><p><a href=\"" + downloadLink + "\" style=\"display:inline-block;padding:12px 20px;background:#101014;color:white;border-radius:8px;text-decoration:none;font-weight:bold;\">Download your product</a></p>";
       await resend.emails.send({
         from: "DevShelf Academy <support@devshelf.company>",
         to: String(details.email),

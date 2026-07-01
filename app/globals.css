@@ -90,6 +90,25 @@
   }
 }
 
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes focus-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 rgba(109, 140, 255, 0);
+  }
+  50% {
+    box-shadow: 0 0 34px rgba(109, 140, 255, 0.24);
+  }
+}
+
 .scan-line {
   animation: scan-line 4.8s ease-in-out infinite;
 }
@@ -138,6 +157,14 @@
   animation: sample-line-in 0.55s ease-out both;
 }
 
+.product-ticker-track {
+  animation: ticker-scroll 34s linear infinite;
+}
+
+.product-ticker-track:hover {
+  animation-play-state: paused;
+}
+
 .feature-strip::after {
   content: "";
   position: absolute;
@@ -163,8 +190,8 @@ html {
 }
 
 ::selection {
-  background: #f5c84b;
-  color: #14100a;
+  background: #6d8cff;
+  color: #ffffff;
 }
 
 @media (prefers-reduced-motion: reduce) {
