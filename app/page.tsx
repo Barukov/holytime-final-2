@@ -6,6 +6,27 @@ import { products } from "./lib/products";
 
 const filters = ["All", "Starter", "Popular", "Practice", "Complete"];
 
+const previewModes = [
+  {
+    id: "Checklist",
+    title: "Session checklist",
+    text: "A clean step-by-step page for planning a focused digital study session.",
+    lines: ["Define the objective", "Collect source notes", "Complete the worksheet", "Write a short summary", "Save the next action"],
+  },
+  {
+    id: "Worksheet",
+    title: "Guided worksheet",
+    text: "Structured fields for turning notes into something usable instead of loose files.",
+    lines: ["Main goal", "Key ideas", "Questions to solve", "Session output", "Follow-up task"],
+  },
+  {
+    id: "Map",
+    title: "Resource map",
+    text: "A quick overview page that helps the buyer understand what each file is for.",
+    lines: ["Notes library", "Templates", "Practice files", "Review pages", "Delivery support"],
+  },
+];
+
 const deliverySteps = [
   ["Select", "Open a pack and review what is included."],
   ["Checkout", "Pay securely through Paddle with the email that should receive the files."],
@@ -22,6 +43,7 @@ const faqs = [
 export default function Page() {
   const [activeFilter, setActiveFilter] = useState("All");
   const [activeSlug, setActiveSlug] = useState(products[1].slug);
+  const [previewMode, setPreviewMode] = useState(previewModes[0].id);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   const visibleProducts = useMemo(() => {
@@ -30,6 +52,7 @@ export default function Page() {
   }, [activeFilter]);
 
   const activeProduct = products.find((product) => product.slug === activeSlug) || products[0];
+  const activePreview = previewModes.find((mode) => mode.id === previewMode) || previewModes[0];
   const totalValue = products.reduce((sum, product) => sum + product.amount, 0);
 
   return (
@@ -141,6 +164,71 @@ export default function Page() {
             </div>
 
             <div className="absolute bottom-0 left-0 right-0 z-0 h-28 bg-[repeating-linear-gradient(90deg,rgba(255,255,255,.08)_0_1px,transparent_1px_76px)]" />
+          </div>
+        </div>
+      </section>
+
+      <section className="relative overflow-hidden bg-[#f7f2e8] px-5 py-20 text-[#14100a] md:px-8">
+        <div className="absolute inset-y-0 left-0 w-1/2 bg-[radial-gradient(circle_at_30%_30%,rgba(8,127,114,.16),transparent_32%)]" />
+        <div className="relative mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-[#087f72]">Preview lab</p>
+            <h2 className="mt-3 max-w-3xl text-5xl font-black leading-tight md:text-6xl">Show value before checkout.</h2>
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-black/62">Each pack is presented as a usable digital workspace, not just a download link. The buyer can understand what the product contains before opening checkout.</p>
+
+            <div className="mt-8 grid gap-3 sm:grid-cols-3">
+              {previewModes.map((mode) => (
+                <button
+                  key={mode.id}
+                  onClick={() => setPreviewMode(mode.id)}
+                  className={"border px-5 py-4 text-left font-black transition duration-300 hover:-translate-y-1 " + (previewMode === mode.id ? "border-[#14100a] bg-[#14100a] text-white" : "border-black/10 bg-white text-[#14100a] hover:border-[#087f72]")}
+                >
+                  {mode.id}
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-3">
+              <div className="border border-black/10 bg-white p-5">
+                <p className="text-3xl font-black">01</p>
+                <p className="mt-2 text-sm font-bold text-black/55">Clear product structure</p>
+              </div>
+              <div className="border border-black/10 bg-white p-5">
+                <p className="text-3xl font-black">PDF</p>
+                <p className="mt-2 text-sm font-bold text-black/55">Readable downloadable files</p>
+              </div>
+              <div className="border border-black/10 bg-white p-5">
+                <p className="text-3xl font-black">24h</p>
+                <p className="mt-2 text-sm font-bold text-black/55">Support response target</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative min-h-[520px]">
+            <div className="absolute left-0 top-12 hidden h-[390px] w-[260px] rotate-[-7deg] border border-black/10 bg-[#f5c84b] shadow-[0_25px_70px_rgba(20,16,10,.14)] md:block" />
+            <div className="absolute right-0 top-0 hidden h-[420px] w-[290px] rotate-[5deg] border border-black/10 bg-[#86e3d0] shadow-[0_25px_70px_rgba(20,16,10,.14)] md:block" />
+            <div className="sample-document relative mx-auto max-w-[430px] border border-black/10 bg-white p-7 shadow-[0_35px_90px_rgba(20,16,10,.18)]">
+              <div className="flex items-start justify-between gap-4 border-b border-black/10 pb-5">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.24em] text-[#087f72]">DevShelf sample</p>
+                  <h3 className="mt-3 text-3xl font-black">{activePreview.title}</h3>
+                </div>
+                <span className="bg-[#14100a] px-3 py-2 text-xs font-black text-white">PDF</span>
+              </div>
+              <p className="mt-5 leading-7 text-black/62">{activePreview.text}</p>
+              <div className="mt-7 space-y-3">
+                {activePreview.lines.map((line, index) => (
+                  <div key={line} className="sample-line flex items-center gap-3 border border-black/10 bg-[#f7f2e8] p-4" style={{ animationDelay: `${index * 95}ms` }}>
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#087f72] text-xs font-black text-white">{index + 1}</span>
+                    <span className="font-bold">{line}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-8 flex items-center justify-between border-t border-black/10 pt-5 text-sm font-bold text-black/52">
+                <span>Digital file preview</span>
+                <span>Included in packs</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
