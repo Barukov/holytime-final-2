@@ -47,10 +47,10 @@ function getAccountForChat(chatId: unknown): StatsAccount {
     return {
       apiKey: process.env.PADDLE_DESK2_API_KEY || "",
       title: "Holytime Final",
-      balanceBaseAmount: Math.max(Number(process.env.PADDLE_DESK2_BALANCE_BASE_AMOUNT || 0), 61279.56),
+      balanceBaseAmount: 1898.29,
       balanceBaseCurrency: process.env.PADDLE_DESK2_BALANCE_BASE_CURRENCY || "USD",
-      balanceBaseCutoffIso: process.env.PADDLE_DESK2_BALANCE_BASE_CUTOFF_ISO || DEFAULT_BALANCE_BASE_CUTOFF_ISO,
-      successfulPaymentsBaseCount: Math.max(Number(process.env.PADDLE_DESK2_SUCCESSFUL_PAYMENTS_BASE_COUNT || 0), 330),
+      balanceBaseCutoffIso: "2026-07-02T10:14:00Z",
+      successfulPaymentsBaseCount: 10,
       refundsAllTimeAmount: Math.max(Number(process.env.PADDLE_DESK2_REFUNDS_ALL_TIME_AMOUNT || 0), 6159.22),
       refundsAllTimeCurrency: process.env.PADDLE_DESK2_REFUNDS_ALL_TIME_CURRENCY || "USD",
     };
