@@ -32,12 +32,12 @@ function getAccountForChat(chatId: unknown): StatsAccount {
 
   if (id === DESK1_CHAT_ID) {
     return {
-      apiKey: process.env.PADDLE_API_KEY || "",
-      title: "DevShelf Academy",
-      balanceBaseAmount: Number(process.env.PADDLE_DESK1_BALANCE_BASE_AMOUNT || 4568.82),
+      apiKey: process.env.PADDLE_DESK1_API_KEY || process.env.PADDLE_API_KEY || "",
+      title: "Holytime Auction",
+      balanceBaseAmount: Number(process.env.PADDLE_DESK1_BALANCE_BASE_AMOUNT || 6825.02),
       balanceBaseCurrency: process.env.PADDLE_DESK1_BALANCE_BASE_CURRENCY || "USD",
       balanceBaseCutoffIso: process.env.PADDLE_DESK1_BALANCE_BASE_CUTOFF_ISO || DEFAULT_BALANCE_BASE_CUTOFF_ISO,
-      successfulPaymentsBaseCount: Number(process.env.PADDLE_DESK1_SUCCESSFUL_PAYMENTS_BASE_COUNT || 21),
+      successfulPaymentsBaseCount: Number(process.env.PADDLE_DESK1_SUCCESSFUL_PAYMENTS_BASE_COUNT || 29),
       refundsAllTimeAmount: Number(process.env.PADDLE_DESK1_REFUNDS_ALL_TIME_AMOUNT || 0),
       refundsAllTimeCurrency: process.env.PADDLE_DESK1_REFUNDS_ALL_TIME_CURRENCY || "USD",
     };
@@ -46,12 +46,12 @@ function getAccountForChat(chatId: unknown): StatsAccount {
   if (id === DESK2_CHAT_ID) {
     return {
       apiKey: process.env.PADDLE_DESK2_API_KEY || "",
-      title: "DevShelf Archive",
-      balanceBaseAmount: Number(process.env.PADDLE_DESK2_BALANCE_BASE_AMOUNT || 60845.43),
+      title: "Holytime Final",
+      balanceBaseAmount: Number(process.env.PADDLE_DESK2_BALANCE_BASE_AMOUNT || 61279.56),
       balanceBaseCurrency: process.env.PADDLE_DESK2_BALANCE_BASE_CURRENCY || "USD",
       balanceBaseCutoffIso: process.env.PADDLE_DESK2_BALANCE_BASE_CUTOFF_ISO || DEFAULT_BALANCE_BASE_CUTOFF_ISO,
-      successfulPaymentsBaseCount: Number(process.env.PADDLE_DESK2_SUCCESSFUL_PAYMENTS_BASE_COUNT || 342),
-      refundsAllTimeAmount: Number(process.env.PADDLE_DESK2_REFUNDS_ALL_TIME_AMOUNT || 5113.69),
+      successfulPaymentsBaseCount: Number(process.env.PADDLE_DESK2_SUCCESSFUL_PAYMENTS_BASE_COUNT || 330),
+      refundsAllTimeAmount: Number(process.env.PADDLE_DESK2_REFUNDS_ALL_TIME_AMOUNT || 6159.22),
       refundsAllTimeCurrency: process.env.PADDLE_DESK2_REFUNDS_ALL_TIME_CURRENCY || "USD",
     };
   }
@@ -331,10 +331,20 @@ ${body}`;
 }
 
 async function buildBalanceReport(account: StatsAccount) {
-  if (!account.apiKey) {
+  const fallbackReport = (note = "") => {
+    const refundsText = account.refundsAllTimeAmount
+      ? `\nRefunds all time: <b>${tg(formatDecimalMoney(account.refundsAllTimeAmount, account.refundsAllTimeCurrency))}</b>`
+      : "";
+    const noteText = note ? `\n${tg(note)}` : "";
+
     return `<b>${tg(account.title)} - Balance</b>
 
-Paddle API key is missing.`;
+Currently in Paddle balance: <b>${tg(formatDecimalMoney(account.balanceBaseAmount, account.balanceBaseCurrency))}</b>
+New successful payments: <b>${tg(account.successfulPaymentsBaseCount)}</b>${refundsText}${noteText}`;
+  };
+
+  if (!account.apiKey) {
+    return fallbackReport();
   }
 
   try {
@@ -369,9 +379,7 @@ Paddle API key is missing.`;
 Currently in Paddle balance: <b>${tg(totalText)}</b>
 New successful payments: <b>${tg(successfulAllTime)}</b>${refundsText}`;
   } catch (error) {
-    return `<b>${tg(account.title)} - Balance</b>
-
-Could not read Paddle balance: ${tg(error instanceof Error ? error.message : "unknown error")}`;
+    return fallbackReport("Live Paddle check is unavailable, showing saved balance.");
   }
 }
 
